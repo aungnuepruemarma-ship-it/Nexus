@@ -1,0 +1,69 @@
+```json
+[
+  {
+    "scenario_id": "SDS-001",
+    "description": "Quantum-Resistant Key Exchange with Entangled Particle-Based Authentication",
+    "task": "Test Synthetic Data Node",
+    "domain_a": "Cryptography",
+    "domain_b": "Quantum Computing",
+    "parameters": {
+      "key_exchange_protocol": "New Hope",
+      "entangled_particles": 1024,
+      "authentication_scheme": "Quantum-Secure Direct Communication",
+      "eavesdropping_attack": "Intercept-Resend with Quantum Error Correction"
+    }
+  },
+  {
+    "scenario_id": "SDS-002",
+    "description": "Post-Quantum Digital Signature Scheme with Lattice-Based Cryptography and Quantum Computer-Generated Signatures",
+    "task": "Test Synthetic Data Node",
+    "domain_a": "Cryptography",
+    "domain_b": "Quantum Computing",
+    "parameters": {
+      "digital_signature_scheme": "NTRU",
+      "lattice_dimension": 2048,
+      "quantum_computer_generated_signatures": true,
+      "side_channel_attack": "Quantum-Enabled Power Analysis"
+    }
+  },
+  {
+    "scenario_id": "SDS-003",
+    "description": "Secure Multi-Party Computation with Quantum-Enhanced Homomorphic Encryption and Yao's Garbled Circuit Protocol",
+    "task": "Test Synthetic Data Node",
+    "domain_a": "Cryptography",
+    "domain_b": "Quantum Computing",
+    "parameters": {
+      "homomorphic_encryption_scheme": "Brakerski-Gentry-Vaikuntanathan",
+      "garbled_circuit_protocol": "Yao's Protocol",
+      "quantum_enhancement": "Quantum Error Correction with Surface Code",
+      "collusion_attack": "Two-Party Correlation Attack"
+    }
+  },
+  {
+    "scenario_id": "SDS-004",
+    "description": "Quantum-Inspired Cryptanalysis of Classically Secure Cryptographic Hash Functions with CNN-Based Side Channel Attacks",
+    "task": "Test Synthetic Data Node",
+    "domain_a": "Cryptography",
+    "domain_b": "Quantum Computing",
+    "parameters": {
+      "cryptographic_hash_function": "SHA-256",
+      "quantum_inspired_cryptanalysis": "Quantum Approximate Optimization Algorithm",
+      "cnn_based_side_channel_attack": true,
+      "hash_collision_attack": "Quantum-Enhanced Birthday Attack"
+    }
+  },
+  {
+    "scenario_id": "SDS-005",
+    "description": "Differential Privacy-Preserving Quantum Machine Learning with Quantum k-Means Clustering and Secure Multi-Party Computation",
+    "task": "Test Synthetic Data Node",
+    "domain_a": "Cryptography",
+    "domain_b": "Quantum Computing",
+    "parameters": {
+      "quantum_machine_learning_algorithm": "Quantum k-Means",
+      "differential_privacy_preservation": "Laplace Mechanism",
+      "secure_multi_party_computation": "Garbled Circuit Protocol",
+      "data_poisoning_attack": "Quantum-Enabled Label Flipping Attack"
+    }
+  }
+]
+```
