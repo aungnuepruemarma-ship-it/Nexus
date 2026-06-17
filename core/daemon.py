@@ -1,12 +1,11 @@
 import time
-import random
-from apscheduler.schedulers.background import BackgroundScheduler
 from core.orchestrator import NexusOrchestrator
 from motivation.need_matrix import NeedMatrix
 from evolution.self_evolution import SelfEvolution
 from memory.discovery_graph import DiscoveryGraph
 from core.architect import ArchitectAgent
 from actions.git_agent import GitAgent
+from motivation.metabolism import Metabolism
 
 class NexusDaemon:
     def __init__(self):
@@ -14,15 +13,25 @@ class NexusDaemon:
         self.needs = NeedMatrix()
         self.evolution = SelfEvolution()
         self.graph = DiscoveryGraph()
-        self.scheduler = BackgroundScheduler()
+        self.metabolism = Metabolism()
         self.git = GitAgent(repo_path=".")
         self.architect = ArchitectAgent(codebase_path="nexus_organism")
 
+    def is_thermal_optimal(self):
+        """Thermodynamic Gate: Only compute if within safe thermal envelope."""
+        temp = self.metabolism.get_thermal_state()
+        return temp < 50.0 # Strict thermal limit
+
     def tick(self):
         print(f"\n🧠 DAEMON TICK: curiosity={self.needs.curiosity_score:.2f}")
+        
+        if not self.is_thermal_optimal():
+            print("🌡️ DAEMON: Thermal overload. Entering low-power contemplation mode.")
+            time.sleep(10)
+            return
+
         if self.needs.curiosity_score > 0.7:
             print("🚀 DAEMON: Curiosity threshold met. Initiating discovery...")
-            # Pick a random discovery task
             task = "Find an interdisciplinary isomorphism"
             pair = ("Biology", "Computer Science")
             final_state = self.orchestrator.run(task, pair[0], pair[1])
@@ -44,11 +53,10 @@ class NexusDaemon:
         self.evolution.genetic_audit()
 
     def start(self):
-        self.scheduler.add_job(self.tick, 'interval', seconds=60)
-        self.scheduler.start()
-        print("🤖 DAEMON STARTED. Press Ctrl+C to exit.")
+        print("🤖 DAEMON STARTED. Operating within thermodynamic constraints.")
         try:
             while True:
-                time.sleep(1)
+                self.tick()
+                time.sleep(60)
         except (KeyboardInterrupt, SystemExit):
-            self.scheduler.shutdown()
+            print("🤖 DAEMON SHUTTING DOWN.")

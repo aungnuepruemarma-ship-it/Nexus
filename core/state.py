@@ -20,6 +20,12 @@ class OrganismState(TypedDict):
     validation_results: List[Dict[str, Any]]
     final_synthesis: Optional[str]
     
+    # Logic Gates (The State Machine)
+    is_hypothesis_stable: bool
+    is_logic_proven: bool
+    is_security_passed: bool
+    is_constitution_passed: bool
+    
     # Control flow
     current_node: str
     critic_count: int
