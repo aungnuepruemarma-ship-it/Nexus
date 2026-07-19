@@ -152,15 +152,46 @@
         "processor": "x86_64",
         "python": "3.11.15"
       }
+    },
+    "EXP-HW-WORKLOAD-ID": {
+      "status": "negative",
+      "passed": false,
+      "failure_type": "redundant-with-baseline",
+      "metrics": {
+        "accuracy": 0.8627,
+        "precision": 0.8695,
+        "recall": 0.8627,
+        "f1": 0.8613,
+        "roc_auc": 0.9487,
+        "n": 102
+      },
+      "baseline_best_acc": 0.8725,
+      "baseline_best_signal": "mem_probe",
+      "per_axis_accuracy": {
+        "time_block": 0.8627
+      },
+      "energy_mj": 988.675,
+      "latency_ms": 197.735,
+      "reproduced": true,
+      "notes": [
+        "accuracy 0.863 does not beat best single-signal baseline 0.873 (the real capability)"
+      ],
+      "n_windows": 510,
+      "collect_seconds": 100.84,
+      "entry_valid": true,
+      "host": {
+        "processor": "x86_64",
+        "python": "3.11.15"
+      }
     }
   },
   "registry_summary": {
     "positive": 4,
-    "negative": 2,
+    "negative": 3,
     "unstable": 1,
     "deprecated": 0,
     "experimental": 1,
-    "total": 8,
+    "total": 9,
     "has_cycle": false
   },
   "registry_valid": true,

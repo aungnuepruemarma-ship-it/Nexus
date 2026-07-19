@@ -57,6 +57,50 @@ drift-invariant `mean/median` ratio is the load-carrying feature.
 
 ---
 
+## A third probe, honestly falsified — `workload_type_classifier_v1` (negative)
+
+We then asked a harder question than *how many* neighbors — *what kind* of work is a
+co-located neighbor doing: **idle / cpu_bound / memory_bound**? This is defensive
+observability for noisy-neighbor diagnosis (pure self-measurement; no `/proc`, no cgroup,
+no cross-process channel). Two timing micro-probes, reacting to different physics:
+
+- a **register-bound arithmetic probe** — a CPU-bound neighbor preempts the measurer for
+  whole scheduler slices, which lands in the timing **tail** (median barely moves, but the
+  mean and `mean/median` inflate — measured on this host: `mean/median` ≈ 1.07 idle →
+  ≈ 1.6 under CPU load);
+- an **~8 MB pointer-chase memory probe** — a memory-bandwidth neighbor lifts the whole
+  memory-probe distribution, **median included** (≈ 466 µs idle → ≈ 525 µs under bandwidth
+  pressure), because every cache miss costs more regardless of scheduling.
+
+(Unlike the contention sensor, this host's CPU affinity is only *advisory* — pinning to one
+core creates no contention, verified empirically — so the ground-truth loads oversubscribe
+every core instead of pinning. That environmental fact is recorded in the entry.)
+
+| metric | measured (this run) | across runs | bar |
+|---|---|---|---|
+| accuracy (3-way) | **0.863** | ~0.85–0.96 | vs 0.33 majority |
+| cross-time-block per-axis | 0.863 | tracks overall | — |
+| reproduced (independent re-split) | ✅ | usually ✅ | — |
+| **best single probe (`mem_probe` alone)** | **0.873** | ~0.87–0.92 | — |
+
+**The verdict is a real negative — `redundant-with-baseline`.** The classifier genuinely
+works (≈ 0.86, well above the 0.33 majority, reproduces, and generalizes across time
+blocks), but it does **not** beat the memory probe *alone* (0.873 ≥ 0.863). Falsification
+shows the memory probe is a near-sufficient statistic for workload type on this host — its
+median carries the bandwidth signal and its tail already picks up CPU preemption — so the
+second (compute) probe's marginal value is within run-to-run noise. Over repeated runs the
+strict CCS multi-signal test oscillates between `positive` and `redundant-with-baseline`;
+we record it **conservatively as a negative** rather than tune toward the favorable draw.
+The honest finding: *you do not need two probes here — one does the job.* The entry still
+ships its measured accuracy, cross-time-block generalization, and dual-use audit so the
+negative stays informative.
+
+This is the falsification standard earning its keep a second time: an intuitively appealing
+"two probes separate three classes" story, held to *beats every single-signal baseline*,
+does not survive — and that is exactly the kind of over-claim a registry should catch.
+
+---
+
 ## The discipline earned its keep — the improvement arc
 
 The contention sensor did **not** work on the first try, and CCS is what caught it:
@@ -89,6 +133,7 @@ code, not just the models.
 | `occupancy_sim_v1` | positive | simulated occupancy, validates the pipeline |
 | `occupancy_v1` | positive | hand-written example |
 | `cpu_contention_unpinned_v1` | **negative** | `environment-bound` — real-hw non-capability |
+| `workload_type_classifier_v1` | **negative** | `redundant-with-baseline` — two-probe workload-type classifier; the memory probe alone suffices (real hw) |
 | `battery_light` | **negative** | `redundant-with-baseline` example |
 | `occupancy_room_echo_trap` | **unstable** | planted memorization trap, `environment-bound` |
 | `sustained_contention_v1` | **experimental** | composite: `temporal-integration` of the contention sensor; `depends_on` it; not yet independently falsified ("no free confidence") |
@@ -125,6 +170,12 @@ registry entry:
   coarsen the clock exposed to untrusted code, add scheduler noise, pin tenants to
   disjoint cores. These are demonstrated on our own machine; no attack tooling is
   included.
+- **Workload-type classifier (negative):** even though it did not certify, its audit ships
+  in the registry entry. It is a **noisy-neighbor diagnosis** channel — it infers the
+  *type* of a co-resident workload (idle / cpu / memory) from self-timing, but reads no
+  neighbor data and identifies no one (permissionless, `disclosure_sensitive: false`).
+  Mitigations recorded: coarsen the exposed clock, partition shared LLC / memory bandwidth,
+  schedule tenants on disjoint cores.
 
 ---
 
@@ -133,6 +184,6 @@ registry entry:
 ```bash
 pip install numpy pandas scikit-learn jsonschema pyarrow pytest
 python scripts/run_all.py        # runs all experiments, writes results/ and registry/registry.json
-python -m pytest -q              # 25 tests
+python -m pytest -q              # 30 tests
 python benchmark/bench_pipeline.py
 ```

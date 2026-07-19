@@ -439,5 +439,86 @@
     "task": "sustained cpu contention over a 3-window horizon",
     "valid_until": "2026-11-16",
     "version": "1.0.0"
+  },
+  "workload_type_classifier_v1": {
+    "accuracy": 0.8627,
+    "confidence": 0.8627,
+    "date_created": "2026-07-19",
+    "description": "Classifies a co-located neighbor's workload type \u2014 idle / cpu_bound / memory_bound \u2014 from two self-timing micro-probes: a register-bound arithmetic probe (a CPU-bound neighbor preempts the measurer, inflating the timing tail) and an ~8 MB pointer-chase memory probe (a memory-bandwidth neighbor lifts the memory-probe median). The designed uses of a busy loop and a memory walk are computation and access; the latent use is neighbor-workload diagnosis. Certified on this host under a cross-time-block split. Defensive observability only \u2014 no /proc, no cgroup, no cross-process channel.",
+    "energy_mj": 988.675,
+    "failure_modes": [
+      "A neighbor that is both CPU- and memory-intensive blends the two signatures.",
+      "Aggressive clock coarsening removes the tail/median structure the probes rely on."
+    ],
+    "failure_type": "redundant-with-baseline",
+    "generalization": {
+      "axis": "time_block",
+      "per_axis_accuracy": {
+        "time_block": 0.8627
+      },
+      "test_blocks": [
+        4
+      ],
+      "train_blocks": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "id": "workload_type_classifier_v1",
+    "last_verified": "2026-07-19",
+    "latency_ms": 197.735,
+    "limitations": [
+      "Measured on one CPU (4 logical cores, Linux 6.18) in a container where CPU affinity is only advisory; contention is created by oversubscription, not pinning.",
+      "Cross-CPU / cross-host generalization not certified (single-device scope).",
+      "cpu_bound relies on scheduler preemption tails; a host with abundant spare cores may make a CPU-bound neighbor harder to distinguish from idle."
+    ],
+    "metrics": {
+      "f1": 0.8613,
+      "precision": 0.8695,
+      "recall": 0.8627,
+      "roc_auc": 0.9487
+    },
+    "model": {
+      "features": "per-probe mean/std/median, mean-over-median & p90-over-median ratios, floor ratio",
+      "kind": "random forest over two-probe timing-distribution shape features"
+    },
+    "name": "Co-located Workload-Type Classifier (timing micro-probes)",
+    "privacy_audit": {
+      "bystander_inference": "Reveals the *type* of a co-resident workload (idle / cpu-bound / memory-bound) on the same host from self-timing alone \u2014 a noisy-neighbor diagnosis / observability side channel. It does not read the neighbor's data or identify it.",
+      "disclosure_sensitive": false,
+      "escalation_gradient": "Finer time resolution or per-probe fingerprinting could in principle profile a specific neighbor workload or build a covert channel; not demonstrated here and out of scope for this defensive observability use.",
+      "mitigations": "Coarsen the clock exposed to untrusted code; partition shared LLC / memory bandwidth (e.g. cache/bandwidth allocation); schedule tenants on disjoint cores.",
+      "permissionless": true,
+      "score": 0.7
+    },
+    "provenance": [],
+    "references": [
+      "exp_hw_loadsense.py (same timing channel, contention-count use)"
+    ],
+    "reproducibility": {
+      "independent_runs": 1,
+      "within_ci": true
+    },
+    "signals": [
+      {
+        "android_permission": "none",
+        "family": "cpu",
+        "name": "compute_probe",
+        "sampling": "240 probes/window"
+      },
+      {
+        "android_permission": "none",
+        "family": "memory",
+        "name": "mem_probe",
+        "sampling": "180 chases/window (~8 MB buffer)"
+      }
+    ],
+    "status": "negative",
+    "task": "co-located workload type: idle / cpu_bound / memory_bound",
+    "training_protocol": "EXP-HW-WORKLOAD-ID",
+    "validation_protocol": "EXP-HW-WORKLOAD-ID invariance split (ccs.harness.falsify)",
+    "version": "1.0.0"
   }
 }

@@ -5,8 +5,9 @@ Steps:
   2. EXP-HW-ENTROPY (real): CPU timing jitter as an entropy source.
   3. EXP-HW-LOADSENSE (real, pinned): CPU timing jitter as a contention/co-tenant sensor.
   4. EXP-HW-LOADSENSE (real, unpinned): the naive version, kept as a real negative.
-  5. Compose the contention sensor over time (algebra + DAG demonstration).
-  6. Assemble registry/registry.json (+ carry over the two hand-written examples),
+  5. EXP-HW-WORKLOAD-ID (real): two-probe co-located workload-TYPE classifier.
+  6. Compose the contention sensor over time (algebra + DAG demonstration).
+  7. Assemble registry/registry.json (+ carry over the two hand-written examples),
      run decay propagation, validate the whole registry, and write results/.
 
 Run: python scripts/run_all.py
@@ -24,6 +25,7 @@ from ccs.composition import CapabilitySpec, temporal_integrate
 from experiments.exp001_occupancy_sim import run as run_occ
 from experiments.exp_hw_entropy import run as run_entropy
 from experiments.exp_hw_loadsense import run as run_load
+from experiments.exp_hw_workload_id import run as run_workload
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "results"
@@ -78,7 +80,7 @@ def main(quick: bool = False):
                 "experiments": {}}
 
     # -- 1. simulated occupancy -------------------------------------------
-    print("[1/5] EXP-001 simulated occupancy ...", flush=True)
+    print("[1/6] EXP-001 simulated occupancy ...", flush=True)
     occ_report, occ_entry, trap = run_occ(verbose=False)
     if occ_entry:
         reg.add(occ_entry)
@@ -103,14 +105,14 @@ def main(quick: bool = False):
     (RESULTS / "exp001_occupancy.json").write_text(json.dumps(occ_report, indent=2, default=list))
 
     # -- 2. real hardware: entropy source ---------------------------------
-    print("[2/5] EXP-HW-ENTROPY real CPU entropy ...", flush=True)
+    print("[2/6] EXP-HW-ENTROPY real CPU entropy ...", flush=True)
     ent_result, ent_entry = run_entropy(n_samples=200_000 if quick else 400_000, verbose=False)
     reg.add(ent_entry)
     manifest["experiments"]["EXP-HW-ENTROPY"] = ent_result
     (RESULTS / "exp_hw_entropy.json").write_text(json.dumps(ent_result, indent=2, default=list))
 
     # -- 3. real hardware: contention sensor (pinned) ---------------------
-    print("[3/5] EXP-HW-LOADSENSE pinned (real contention sensor) ...", flush=True)
+    print("[3/6] EXP-HW-LOADSENSE pinned (real contention sensor) ...", flush=True)
     load_out, load_entry, _ = run_load(rounds=3 if quick else 4, pinned=True, verbose=False)
     if load_entry:
         reg.add(load_entry)
@@ -118,15 +120,23 @@ def main(quick: bool = False):
     (RESULTS / "exp_hw_loadsense.json").write_text(json.dumps(load_out, indent=2, default=list))
 
     # -- 4. real hardware: contention sensor (unpinned) = real negative ---
-    print("[4/5] EXP-HW-LOADSENSE unpinned (real negative) ...", flush=True)
+    print("[4/6] EXP-HW-LOADSENSE unpinned (real negative) ...", flush=True)
     neg_out, neg_entry, _ = run_load(rounds=3 if quick else 4, pinned=False, verbose=False)
     if neg_entry:
         reg.add(neg_entry)
     manifest["experiments"]["EXP-HW-LOADSENSE-UNPINNED"] = neg_out
     (RESULTS / "exp_hw_loadsense_unpinned.json").write_text(json.dumps(neg_out, indent=2, default=list))
 
-    # -- 5. composition: sustained contention -----------------------------
-    print("[5/5] composing sustained contention ...", flush=True)
+    # -- 5. real hardware: co-located workload-type classifier ------------
+    print("[5/6] EXP-HW-WORKLOAD-ID (co-located workload type) ...", flush=True)
+    wid_out, wid_entry, _ = run_workload(rounds=3 if quick else 5, verbose=False)
+    if wid_entry:
+        reg.add(wid_entry)
+    manifest["experiments"]["EXP-HW-WORKLOAD-ID"] = wid_out
+    (RESULTS / "exp_hw_workload_id.json").write_text(json.dumps(wid_out, indent=2, default=list))
+
+    # -- 6. composition: sustained contention -----------------------------
+    print("[6/6] composing sustained contention ...", flush=True)
     if load_entry and load_entry.get("status") in ("positive", "unstable"):
         comp = _compose_sustained_contention(load_entry)
         reg.add(comp)
