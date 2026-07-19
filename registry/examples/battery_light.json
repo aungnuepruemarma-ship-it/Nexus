@@ -1,0 +1,22 @@
+{
+  "id": "battery_light",
+  "name": "Ambient Light from Battery Telemetry",
+  "status": "negative",
+  "version": "1.0.0",
+  "description": "Tested claim: ambient light level is inferable from battery voltage/current/temperature telemetry (via display auto-brightness power draw). Falsified: no measurable information gain over the prior once display brightness is held fixed or the ambient light sensor baseline is available.",
+  "task": "ambient light level: dark / dim / bright",
+  "signals": [
+    { "family": "battery", "name": "battery_current", "sampling": "1 Hz", "android_permission": "none" },
+    { "family": "battery", "name": "battery_voltage", "sampling": "1 Hz", "android_permission": "none" }
+  ],
+  "failure_type": "redundant-with-baseline",
+  "limitations": [
+    "Apparent signal in pilot data was entirely mediated by auto-brightness display power draw, not by any direct physical coupling; with brightness fixed, mutual information estimate fell below the screening threshold."
+  ],
+  "failure_modes": [],
+  "references": ["Screening run 2026-07-12, MI estimate 0.02 bits vs threshold 0.1 bits"],
+  "training_protocol": "EXP-004",
+  "provenance": ["sha256:deadbeef01234567"],
+  "date_created": "2026-07-19",
+  "last_verified": "2026-07-19"
+}

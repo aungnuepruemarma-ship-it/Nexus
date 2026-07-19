@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/aungnuepruemarma-ship-it/nexus/registry/capability.schema.json",
+  "title": "CCS Capability Registry Entry",
+  "description": "A falsifiable capability claim and its evidence. See docs/ccs-vision.md sections 4-7 for the normative semantics.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "status",
+    "version",
+    "description",
+    "task",
+    "signals",
+    "date_created"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$",
+      "description": "Stable identifier, e.g. 'occupancy_v1'."
+    },
+    "name": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["positive", "negative", "unstable", "deprecated", "experimental"]
+    },
+    "version": {
+      "type": "string",
+      "description": "Semantic version of this claim, e.g. '1.0.0'."
+    },
+    "description": { "type": "string" },
+    "task": {
+      "type": "string",
+      "description": "The question with defined ground truth, e.g. 'room occupancy: 0/1/2/3+'."
+    },
+    "signals": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["family", "name"],
+        "properties": {
+          "family": {
+            "type": "string",
+            "enum": ["imu", "battery", "thermal", "cpu", "memory", "network", "light", "pressure", "capability"]
+          },
+          "name": { "type": "string" },
+          "sampling": { "type": "string", "description": "e.g. '100 Hz', 'every 5 s'." },
+          "android_permission": {
+            "type": "string",
+            "description": "Permission gating this signal; 'none' if permissionless."
+          }
+        }
+      }
+    },
+    "model": {
+      "type": "object",
+      "description": "The witness model for this claim (a claim is not a model; see vision section 2.1).",
+      "properties": {
+        "kind": { "type": "string" },
+        "features": { "type": "string" },
+        "artifact_hash": { "type": "string" }
+      }
+    },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "accuracy": { "type": "number", "minimum": 0, "maximum": 1 },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "precision": { "type": "number", "minimum": 0, "maximum": 1 },
+        "recall": { "type": "number", "minimum": 0, "maximum": 1 },
+        "f1": { "type": "number", "minimum": 0, "maximum": 1 },
+        "roc_auc": { "type": "number", "minimum": 0, "maximum": 1 },
+        "cross_device_accuracy_drop": { "type": "number" }
+      }
+    },
+    "energy_mj": { "type": "number", "minimum": 0, "description": "Measured energy per inference, millijoules." },
+    "latency_ms": { "type": "number", "minimum": 0 },
+    "privacy_audit": {
+      "type": "object",
+      "description": "Dual-use audit (vision section 6). Required for status 'positive'.",
+      "required": ["score", "permissionless", "disclosure_sensitive"],
+      "properties": {
+        "score": { "type": "number", "minimum": 0, "maximum": 1, "description": "Higher = lower privacy risk at the recommended operating point." },
+        "bystander_inference": { "type": "string" },
+        "escalation_gradient": { "type": "string", "description": "What finer-grained inference the same signals could support." },
+        "permissionless": { "type": "boolean", "description": "True if every signal in the subset requires no Android permission." },
+        "mitigations": { "type": "string", "description": "Recommended sampling/quantization operating point." },
+        "disclosure_sensitive": { "type": "boolean" }
+      }
+    },
+    "generalization": {
+      "type": "object",
+      "description": "Per-population certification evidence (vision section 4).",
+      "properties": {
+        "train_oems": { "type": "array", "items": { "type": "string" } },
+        "test_oems": { "type": "array", "items": { "type": "string" } },
+        "train_rooms": { "type": "array", "items": { "type": "string" } },
+        "test_rooms": { "type": "array", "items": { "type": "string" } },
+        "per_oem_accuracy": {
+          "type": "object",
+          "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "supported_devices": { "type": "array", "items": { "type": "string" } },
+    "unsupported_devices": { "type": "array", "items": { "type": "string" } },
+    "training_protocol": { "type": "string", "description": "Experiment ID or protocol reference, e.g. 'EXP-001'." },
+    "validation_protocol": { "type": "string" },
+    "reproducibility": {
+      "type": "object",
+      "properties": {
+        "independent_runs": { "type": "integer", "minimum": 0 },
+        "within_ci": { "type": "boolean" }
+      }
+    },
+    "provenance": {
+      "type": "array",
+      "description": "Archive session hashes this claim's evidence is drawn from.",
+      "items": { "type": "string", "pattern": "^sha256:[0-9a-f]{8,64}$" }
+    },
+    "failure_type": {
+      "type": "string",
+      "enum": [
+        "redundant-with-baseline",
+        "non-reproducible",
+        "oem-bound",
+        "environment-bound",
+        "over-budget",
+        "screened-out"
+      ],
+      "description": "Required when status is 'negative' (see allOf constraint)."
+    },
+    "depends_on": {
+      "type": "array",
+      "description": "Capability ids this composite is built from (registry forms a DAG).",
+      "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+    },
+    "composition_operator": {
+      "type": "string",
+      "enum": ["fusion", "refinement", "temporal-integration"],
+      "description": "Required when depends_on is non-empty."
+    },
+    "limitations": { "type": "array", "items": { "type": "string" } },
+    "failure_modes": { "type": "array", "items": { "type": "string" } },
+    "references": { "type": "array", "items": { "type": "string" } },
+    "valid_until": { "type": "string", "format": "date", "description": "Certification expiry; for composites, min over depends_on." },
+    "half_life_days": { "type": "number", "exclusiveMinimum": 0, "description": "Estimated decay half-life (vision section 5)." },
+    "date_created": { "type": "string", "format": "date" },
+    "last_verified": { "type": "string", "format": "date" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "negative" } } },
+      "then": { "required": ["failure_type"] }
+    },
+    {
+      "if": { "properties": { "status": { "const": "positive" } } },
+      "then": { "required": ["accuracy", "energy_mj", "privacy_audit", "generalization", "provenance", "valid_until", "last_verified"] }
+    },
+    {
+      "if": {
+        "required": ["depends_on"],
+        "properties": { "depends_on": { "minItems": 1 } }
+      },
+      "then": { "required": ["composition_operator"] }
+    }
+  ],
+  "additionalProperties": false
+}
