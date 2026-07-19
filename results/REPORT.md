@@ -13,7 +13,7 @@ the very machine the platform runs on.
 
 ---
 
-## Two new uses of hardware, certified
+## New uses of hardware, certified
 
 ### 1. The CPU clock is a hardware entropy source — `cpu_jitter_entropy_v1` (positive)
 
@@ -54,6 +54,31 @@ Mechanism: when the measurer and the load share one core, the CFS scheduler spli
 core evenly among the `(k+1)` threads, so a fixed workload's mean time scales ~linearly
 with the co-runner count `k` (measured: 0→31.7µs, 1→59.3µs, 2→93.3µs, 3→109.7µs). The
 drift-invariant `mean/median` ratio is the load-carrying feature.
+
+### 3. The machine tells you where its caches end — `memory_hierarchy_v1` (positive)
+
+No CPUID, no `/proc/cpuinfo`, no vendor spec — the machine reveals its own memory hierarchy
+if you *ask it in timing*. A prefetch-defeating pointer chase is walked through buffers of
+geometrically growing size; while the working set is cache-resident, per-access latency is
+flat, and when it spills toward DRAM the latency jumps. The **shape of the latency-vs-working-
+set curve is this CPU's cache/memory topology, recovered empirically** ("Laws of This Machine").
+
+| metric | measured | pre-registered bar | pass |
+|---|---|---|---|
+| cache→DRAM jump ratio (both seeds) | **~1.7–1.9×** | ≥ 1.30× | ✅ |
+| cliff reproduces across independent runs | ✅ | required | ✅ |
+| recovered working-set boundary | ~4–16 MiB | (reported estimate) | — |
+| fast (cache-resident) latency | ~110 ns | — | — |
+| slow (DRAM) latency | ~205 ns | — | — |
+
+The certified quantity is the **reproducible cliff ratio** (a ~1.8× latency cliff appears in
+every run, on two independent pointer-cycle seeds); the boundary itself carries ~one-octave
+run-to-run noise on this shared host (the LLC is contended by real neighbors), so it is
+reported as an estimate, not a pass gate. The absolute floor (~110 ns) includes a constant
+Python-interpreter overhead, which is why L1/L2 sit inside the flat region and only the
+dominant cache→DRAM transition is resolved — an honest limitation recorded in the entry. This
+is the same pointer-chase primitive the workload classifier uses, turned into a **microarchitecture
+discovery** probe: the machine measuring a physical law about itself.
 
 ---
 
@@ -130,6 +155,7 @@ code, not just the models.
 |---|---|---|
 | `cpu_jitter_entropy_v1` | positive | CPU clock as entropy source (real hw) |
 | `cpu_contention_sensor_v1` | positive | co-tenant counter from timing (real hw) |
+| `memory_hierarchy_v1` | positive | cache→DRAM latency cliff recovered from timing (real hw) |
 | `occupancy_sim_v1` | positive | simulated occupancy, validates the pipeline |
 | `occupancy_v1` | positive | hand-written example |
 | `cpu_contention_unpinned_v1` | **negative** | `environment-bound` — real-hw non-capability |
@@ -170,6 +196,12 @@ registry entry:
   coarsen the clock exposed to untrusted code, add scheduler noise, pin tenants to
   disjoint cores. These are demonstrated on our own machine; no attack tooling is
   included.
+- **Memory-hierarchy ladder:** benign self-profiling — it walks only its own memory and
+  reads the host's cache topology, not any neighbor's data (permissionless). The escalation
+  note is recorded plainly: the same working-set-latency structure is the substrate of cache
+  timing side channels (e.g. Prime+Probe), so mitigations listed are constant-time access
+  patterns, cache partitioning / way-locking, and clock coarsening. No cross-tenant attack is
+  demonstrated — the probe only maps the hierarchy on its own host.
 - **Workload-type classifier (negative):** even though it did not certify, its audit ships
   in the registry entry. It is a **noisy-neighbor diagnosis** channel — it infers the
   *type* of a co-resident workload (idle / cpu / memory) from self-timing, but reads no
@@ -184,6 +216,6 @@ registry entry:
 ```bash
 pip install numpy pandas scikit-learn jsonschema pyarrow pytest
 python scripts/run_all.py        # runs all experiments, writes results/ and registry/registry.json
-python -m pytest -q              # 30 tests
+python -m pytest -q              # 35 tests
 python benchmark/bench_pipeline.py
 ```

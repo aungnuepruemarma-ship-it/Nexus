@@ -1,0 +1,67 @@
+{
+  "passed": true,
+  "status": "positive",
+  "hierarchy_run1": {
+    "n_levels": 2,
+    "boundary_bytes": 4194304,
+    "boundary_human": "4MiB",
+    "fast_latency_ns": 128.08,
+    "slow_latency_ns": 220.73,
+    "jump_ratio": 1.723,
+    "curve_ns": {
+      "4KiB": 128.08,
+      "8KiB": 120.07,
+      "16KiB": 142.28,
+      "32KiB": 119.49,
+      "64KiB": 111.99,
+      "128KiB": 106.99,
+      "256KiB": 116.07,
+      "512KiB": 109.13,
+      "1MiB": 111.14,
+      "2MiB": 122.11,
+      "4MiB": 210.9,
+      "8MiB": 207.48,
+      "16MiB": 220.73,
+      "32MiB": 226.4
+    }
+  },
+  "hierarchy_run2": {
+    "n_levels": 2,
+    "boundary_bytes": 8388608,
+    "boundary_human": "8MiB",
+    "fast_latency_ns": 108.61,
+    "slow_latency_ns": 211.26,
+    "jump_ratio": 1.945,
+    "curve_ns": {
+      "4KiB": 108.61,
+      "8KiB": 109.27,
+      "16KiB": 105.77,
+      "32KiB": 109.15,
+      "64KiB": 107.75,
+      "128KiB": 109.73,
+      "256KiB": 105.61,
+      "512KiB": 108.56,
+      "1MiB": 112.98,
+      "2MiB": 118.67,
+      "4MiB": 145.2,
+      "8MiB": 163.29,
+      "16MiB": 211.26,
+      "32MiB": 333.21
+    }
+  },
+  "boundary_reproduced": true,
+  "min_jump_ratio": 1.723,
+  "sharpness": 0.7234,
+  "thresholds": {
+    "min_jump_ratio": 1.3,
+    "max_boundary_octaves": 1.0
+  },
+  "collect_seconds": 1.9,
+  "entry_valid": true,
+  "entry_errors": [],
+  "host": {
+    "machine": "x86_64",
+    "processor": "x86_64",
+    "python": "3.11.15"
+  }
+}

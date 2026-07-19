@@ -197,6 +197,69 @@
     "valid_until": "2027-01-19",
     "version": "1.0.0"
   },
+  "memory_hierarchy_v1": {
+    "accuracy": 0.7234,
+    "confidence": 0.7234,
+    "date_created": "2026-07-19",
+    "description": "Recovers this machine's cache/memory hierarchy from a pointer-chase latency sweep over geometrically growing working sets \u2014 no CPUID, no /proc, no vendor spec. The designed use of a memory walk is data access; the latent capability is empirical microarchitecture discovery: a flat cache-resident plateau and a cache->DRAM latency cliff whose working-set boundary reproduces across independent runs.",
+    "energy_mj": 339.419,
+    "failure_modes": [
+      "A host whose L3 exceeds the max swept working set would hide the cliff.",
+      "Heavy co-tenant memory-bandwidth load can blur the plateau and shift the boundary."
+    ],
+    "generalization": {
+      "axis": "independent_runs",
+      "boundary_bytes_run1": 4194304,
+      "boundary_bytes_run2": 8388608,
+      "boundary_octaves_apart": 1.0,
+      "jump_ratio_run1": 1.723,
+      "jump_ratio_run2": 1.945,
+      "note": "single-host measurement; the boundary and latencies are this CPU's own topology"
+    },
+    "half_life_days": 120,
+    "id": "memory_hierarchy_v1",
+    "last_verified": "2026-07-19",
+    "latency_ms": 67.8838,
+    "limitations": [
+      "Measured on one host (4 logical cores, Linux 6.18) in a container; the absolute latency floor includes a constant Python-interpreter overhead, so sub-cliff levels (L1/L2) sit inside the flat region and are not individually resolved.",
+      "Recovers the dominant cache->DRAM boundary + its latency ratio, not the full per-level cache-size table; cross-CPU generalization not certified.",
+      "The certified quantity is the reproducible cliff ratio; the boundary itself carries ~one-octave run-to-run noise (observed ~2-16 MiB) on this shared host."
+    ],
+    "model": {
+      "features": "median ns/access vs working-set size (geometric ladder)",
+      "kind": "pointer-chase latency sweep + largest-jump tier detection"
+    },
+    "name": "Memory-Hierarchy Ladder (recovered from timing)",
+    "privacy_audit": {
+      "bystander_inference": "None about other parties \u2014 the probe only walks its own memory and times its own accesses; it reveals the host's cache topology, not any neighbor's data.",
+      "disclosure_sensitive": false,
+      "escalation_gradient": "The same working-set-latency structure is the substrate of cache timing side channels (e.g. Prime+Probe); this experiment only maps the hierarchy on its own host and demonstrates no cross-tenant attack.",
+      "mitigations": "Constant-time memory access patterns in secret-dependent code; cache partitioning / way-locking; coarsen the clock exposed to untrusted code.",
+      "permissionless": false,
+      "score": 1.0
+    },
+    "provenance": [],
+    "references": [
+      "Saavedra & Smith, memory hierarchy microbenchmarking",
+      "exp_hw_workload_id.py (same pointer-chase primitive, contention use)"
+    ],
+    "reproducibility": {
+      "independent_runs": 2,
+      "within_ci": true
+    },
+    "signals": [
+      {
+        "android_permission": "none",
+        "family": "memory",
+        "name": "cache_latency",
+        "sampling": "pointer-chase per working-set size"
+      }
+    ],
+    "status": "positive",
+    "task": "recover the cache/memory hierarchy (level-transition boundary + latencies)",
+    "valid_until": "2026-11-16",
+    "version": "1.0.0"
+  },
   "occupancy_room_echo_trap": {
     "date_created": "2026-07-19",
     "description": "Planted memorization trap: room_echo encodes room identity. Rejected by the falsifier \u2014 perfect within known rooms, collapses on a new room.",
