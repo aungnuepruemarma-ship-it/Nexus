@@ -1,0 +1,29 @@
+{
+  "status": "positive",
+  "passed": true,
+  "failure_type": null,
+  "metrics": {
+    "accuracy": 0.9432,
+    "precision": 0.9491,
+    "recall": 0.9432,
+    "f1": 0.9428,
+    "roc_auc": 0.9905,
+    "n": 88
+  },
+  "baseline_best_acc": 0.25,
+  "baseline_best_signal": "majority",
+  "per_axis_accuracy": {
+    "time_block": 0.9432
+  },
+  "energy_mj": 243.431,
+  "latency_ms": 48.686,
+  "reproduced": true,
+  "notes": [],
+  "n_windows": 352,
+  "collect_seconds": 17.14,
+  "entry_valid": true,
+  "host": {
+    "processor": "x86_64",
+    "python": "3.11.15"
+  }
+}

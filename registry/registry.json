@@ -1,0 +1,443 @@
+{
+  "battery_light": {
+    "date_created": "2026-07-19",
+    "description": "Tested claim: ambient light level is inferable from battery voltage/current/temperature telemetry (via display auto-brightness power draw). Falsified: no measurable information gain over the prior once display brightness is held fixed or the ambient light sensor baseline is available.",
+    "failure_modes": [],
+    "failure_type": "redundant-with-baseline",
+    "id": "battery_light",
+    "last_verified": "2026-07-19",
+    "limitations": [
+      "Apparent signal in pilot data was entirely mediated by auto-brightness display power draw, not by any direct physical coupling; with brightness fixed, mutual information estimate fell below the screening threshold."
+    ],
+    "name": "Ambient Light from Battery Telemetry",
+    "provenance": [
+      "sha256:deadbeef01234567"
+    ],
+    "references": [
+      "Screening run 2026-07-12, MI estimate 0.02 bits vs threshold 0.1 bits"
+    ],
+    "signals": [
+      {
+        "android_permission": "none",
+        "family": "battery",
+        "name": "battery_current",
+        "sampling": "1 Hz"
+      },
+      {
+        "android_permission": "none",
+        "family": "battery",
+        "name": "battery_voltage",
+        "sampling": "1 Hz"
+      }
+    ],
+    "status": "negative",
+    "task": "ambient light level: dark / dim / bright",
+    "training_protocol": "EXP-004",
+    "version": "1.0.0"
+  },
+  "cpu_contention_sensor_v1": {
+    "accuracy": 0.9432,
+    "confidence": 0.9432,
+    "date_created": "2026-07-19",
+    "description": "Infers the number of concurrent compute tenants contending for the CPU from the shape of a fixed workload's timing distribution \u2014 no /proc, no cgroup, no OS load API. The designed use of a busy loop is computation; the latent use is a contention sensor. Certified on this host under a cross-time-block split.",
+    "energy_mj": 243.431,
+    "failure_modes": [
+      "A fully idle host with a constant background daemon could shift the noise floor."
+    ],
+    "generalization": {
+      "axis": "time_block",
+      "per_axis_accuracy": {
+        "time_block": 0.9432
+      },
+      "test_blocks": [
+        3
+      ],
+      "train_blocks": [
+        0,
+        1,
+        2
+      ]
+    },
+    "half_life_days": 120,
+    "id": "cpu_contention_sensor_v1",
+    "last_verified": "2026-07-19",
+    "latency_ms": 48.686,
+    "limitations": [
+      "Measured on one CPU (Intel Xeon @ 2.80GHz, 4 cores, Linux 6.18) in a container.",
+      "Cross-CPU / cross-host generalization not yet certified (single-device scope).",
+      "Absolute contention counts assume a comparable core count."
+    ],
+    "metrics": {
+      "f1": 0.9428,
+      "precision": 0.9491,
+      "recall": 0.9432,
+      "roc_auc": 0.9905
+    },
+    "model": {
+      "features": "mean/std/median/p90/p99, mean-over-median & p90-over-median ratios, stall fraction",
+      "kind": "random forest over timing-distribution shape features"
+    },
+    "name": "CPU Contention Sensor (timing jitter)",
+    "privacy_audit": {
+      "bystander_inference": "Reveals the presence and count of co-resident compute tenants on the same host without any OS load API \u2014 a noisy-neighbor / co-tenancy side channel.",
+      "disclosure_sensitive": false,
+      "escalation_gradient": "Finer time resolution and per-core pinning could fingerprint specific neighbor workloads or build a covert channel; not demonstrated here.",
+      "mitigations": "Coarsen the clock exposed to untrusted code; add scheduler noise; pin tenants to disjoint cores.",
+      "permissionless": true,
+      "score": 0.7
+    },
+    "provenance": [],
+    "references": [
+      "exp_hw_entropy.py (same timing channel, entropy use)"
+    ],
+    "reproducibility": {
+      "independent_runs": 1,
+      "within_ci": true
+    },
+    "signals": [
+      {
+        "android_permission": "none",
+        "family": "cpu",
+        "name": "loop_timing",
+        "sampling": "500 probes/window"
+      }
+    ],
+    "status": "positive",
+    "task": "cpu contention level: 0 / 1 / 2 / 3 extra busy cores",
+    "training_protocol": "EXP-HW-LOADSENSE",
+    "valid_until": "2026-11-16",
+    "validation_protocol": "EXP-HW-LOADSENSE invariance split (ccs.harness.falsify)",
+    "version": "1.0.0"
+  },
+  "cpu_contention_unpinned_v1": {
+    "date_created": "2026-07-19",
+    "description": "Naive contention sensor with the measurer NOT pinned to the load's core. Background burners land on other cores, so the fixed workload is barely perturbed and the capability fails to generalize across time blocks \u2014 the falsifier rejects it. Kept as a negative result: the physical insight (same-core contention) is what mattered.",
+    "failure_modes": [
+      "A fully idle host with a constant background daemon could shift the noise floor."
+    ],
+    "failure_type": "environment-bound",
+    "id": "cpu_contention_unpinned_v1",
+    "last_verified": "2026-07-19",
+    "limitations": [
+      "Measured on one CPU (Intel Xeon @ 2.80GHz, 4 cores, Linux 6.18) in a container.",
+      "Cross-CPU / cross-host generalization not yet certified (single-device scope).",
+      "Absolute contention counts assume a comparable core count."
+    ],
+    "name": "CPU Contention Sensor \u2014 unpinned (naive)",
+    "provenance": [],
+    "references": [
+      "exp_hw_entropy.py (same timing channel, entropy use)"
+    ],
+    "signals": [
+      {
+        "android_permission": "none",
+        "family": "cpu",
+        "name": "loop_timing",
+        "sampling": "500 probes/window"
+      }
+    ],
+    "status": "negative",
+    "task": "cpu contention level: 0 / 1 / 2 / 3 extra busy cores",
+    "training_protocol": "EXP-HW-LOADSENSE",
+    "validation_protocol": "EXP-HW-LOADSENSE invariance split (ccs.harness.falsify)",
+    "version": "1.0.0"
+  },
+  "cpu_jitter_entropy_v1": {
+    "accuracy": 0.9354,
+    "confidence": 0.9354,
+    "date_created": "2026-07-19",
+    "description": "Harvests physical entropy from nanosecond jitter in the time to run a fixed CPU workload. Designed use of the clock is timekeeping; the latent capability is a true-random source. LSB is von-Neumann-whitened; min-entropy and a randomness battery are measured on the whitened stream.",
+    "energy_mj": 0.0,
+    "failure_modes": [
+      "A CPU with a very coarse timer (low-resolution perf_counter) would starve the LSB of entropy."
+    ],
+    "generalization": {
+      "note": "single-host measurement; cross-CPU generalization is future work"
+    },
+    "half_life_days": 180,
+    "id": "cpu_jitter_entropy_v1",
+    "last_verified": "2026-07-19",
+    "latency_ms": 0.166355,
+    "limitations": [
+      "Measured on one CPU (Intel Xeon @ 2.80GHz, Linux 6.18) in a container; cross-CPU min-entropy not yet certified.",
+      "Raw throughput is low; suitable for seeding a CSPRNG, not bulk generation."
+    ],
+    "model": {
+      "features": "low bit of perf_counter_ns workload timing",
+      "kind": "LSB harvest + von Neumann whitening"
+    },
+    "name": "CPU Timing-Jitter Entropy Source",
+    "privacy_audit": {
+      "bystander_inference": "None \u2014 the source consumes only its own timing; it reveals nothing about other parties.",
+      "disclosure_sensitive": false,
+      "escalation_gradient": "The same fixed-workload timing channel that yields entropy also leaks contention information (see exp_hw_loadsense); an attacker co-resident on the host could use it as a covert/side timing channel.",
+      "mitigations": "Whiten before use (von Neumann here; a cryptographic conditioner such as SHA-256 in deployment). Do not expose raw timings across trust boundaries.",
+      "permissionless": true,
+      "score": 0.7
+    },
+    "provenance": [],
+    "references": [
+      "NIST SP 800-90B min-entropy (MCV estimator)",
+      "Linux jitterentropy RNG"
+    ],
+    "reproducibility": {
+      "independent_runs": 1,
+      "within_ci": true
+    },
+    "signals": [
+      {
+        "android_permission": "none",
+        "family": "cpu",
+        "name": "cpu_timing",
+        "sampling": "as fast as workload allows"
+      }
+    ],
+    "status": "positive",
+    "task": "generate unpredictable bits (entropy source)",
+    "valid_until": "2027-01-19",
+    "version": "1.0.0"
+  },
+  "occupancy_room_echo_trap": {
+    "date_created": "2026-07-19",
+    "description": "Planted memorization trap: room_echo encodes room identity. Rejected by the falsifier \u2014 perfect within known rooms, collapses on a new room.",
+    "failure_type": "environment-bound",
+    "id": "occupancy_room_echo_trap",
+    "last_verified": "2026-07-19",
+    "limitations": [
+      "Room-bound; do not deploy outside its certified room set."
+    ],
+    "name": "Occupancy from room_echo (planted trap)",
+    "signals": [
+      {
+        "android_permission": "none",
+        "family": "capability",
+        "name": "room_echo"
+      }
+    ],
+    "status": "unstable",
+    "task": "room occupancy: 0 / 1 / 2 / 3+",
+    "version": "1.0.0"
+  },
+  "occupancy_sim_v1": {
+    "accuracy": 0.8562,
+    "confidence": 0.8562,
+    "date_created": "2026-07-19",
+    "description": "Estimates occupancy class (0/1/2/3+) from WiFi RSSI, thermal, and IMU. Simulated validation of the CCS pipeline.",
+    "energy_mj": 13.0,
+    "failure_modes": [],
+    "generalization": {
+      "per_oem_accuracy": {},
+      "test_oems": [
+        "Xiaomi"
+      ],
+      "test_rooms": [
+        "conference"
+      ],
+      "train_oems": [
+        "Pixel",
+        "Samsung"
+      ],
+      "train_rooms": [
+        "office",
+        "bedroom"
+      ]
+    },
+    "half_life_days": 180,
+    "id": "occupancy_sim_v1",
+    "last_verified": "2026-07-19",
+    "latency_ms": 3.0,
+    "limitations": [],
+    "metrics": {
+      "f1": 0.8554,
+      "precision": 0.8603,
+      "recall": 0.8562,
+      "roc_auc": 0.9766
+    },
+    "model": {
+      "features": "rssi var/mean, thermal mean, imu band energy",
+      "kind": "random forest over windowed features"
+    },
+    "name": "Room Occupancy (simulated)",
+    "privacy_audit": {
+      "bystander_inference": "Reveals presence and coarse count of non-consenting occupants; no identity.",
+      "disclosure_sensitive": false,
+      "escalation_gradient": "Higher IMU rate + per-AP RSSI could localize occupants; not demonstrated.",
+      "mitigations": "Cap IMU at 100 Hz; quantize RSSI to 2 dBm.",
+      "permissionless": false,
+      "score": 1.0
+    },
+    "provenance": [
+      "sha256:5111111111111111"
+    ],
+    "references": [],
+    "reproducibility": {
+      "independent_runs": 1,
+      "within_ci": true
+    },
+    "signals": [
+      {
+        "android_permission": "ACCESS_FINE_LOCATION",
+        "family": "network",
+        "name": "wifi_rssi",
+        "sampling": "every 5 s"
+      },
+      {
+        "android_permission": "none",
+        "family": "thermal",
+        "name": "thermal",
+        "sampling": "1 Hz"
+      },
+      {
+        "android_permission": "none",
+        "family": "imu",
+        "name": "imu",
+        "sampling": "100 Hz"
+      }
+    ],
+    "status": "positive",
+    "task": "room occupancy: 0 / 1 / 2 / 3+",
+    "training_protocol": "EXP-001",
+    "valid_until": "2027-01-15",
+    "validation_protocol": "EXP-001 invariance split (ccs.harness.falsify)",
+    "version": "1.0.0"
+  },
+  "occupancy_v1": {
+    "accuracy": 0.91,
+    "confidence": 0.92,
+    "date_created": "2026-07-19",
+    "description": "Estimates room occupancy class (0 / 1 / 2 / 3+ people) from low-intrusion signals: WiFi RSSI perturbation, battery thermal drift, and micro-vibration via accelerometer. No microphone, no camera.",
+    "energy_mj": 12,
+    "failure_modes": [
+      "Aggressive WiFi scan throttling on some OEM power-saver modes starves the RSSI feature."
+    ],
+    "generalization": {
+      "per_oem_accuracy": {
+        "Google": 0.93,
+        "Samsung": 0.91,
+        "Xiaomi": 0.89
+      },
+      "test_oems": [
+        "Xiaomi"
+      ],
+      "test_rooms": [
+        "conference-1F"
+      ],
+      "train_oems": [
+        "Google",
+        "Samsung"
+      ],
+      "train_rooms": [
+        "office-2F-east",
+        "bedroom-A"
+      ]
+    },
+    "half_life_days": 180,
+    "id": "occupancy_v1",
+    "last_verified": "2026-07-19",
+    "latency_ms": 18,
+    "limitations": [
+      "Requires the phone to be stationary on a surface in the room.",
+      "Accuracy degrades when HVAC state changes mid-window."
+    ],
+    "metrics": {
+      "cross_device_accuracy_drop": 0.04,
+      "f1": 0.9,
+      "precision": 0.9,
+      "recall": 0.89,
+      "roc_auc": 0.95
+    },
+    "model": {
+      "artifact_hash": "sha256:3f9a1c2e",
+      "features": "RSSI variance + spectral entropy, thermal slope, accel band energy 0.5-4 Hz",
+      "kind": "gradient-boosted trees over 10 s windowed features"
+    },
+    "name": "Room Occupancy Estimation",
+    "privacy_audit": {
+      "bystander_inference": "Reveals presence and coarse count of non-consenting room occupants; does not identify individuals at the recommended operating point.",
+      "disclosure_sensitive": false,
+      "escalation_gradient": "Higher IMU rates plus per-AP RSSI could support coarse localization of occupants within the room; identification not demonstrated.",
+      "mitigations": "Cap IMU at 100 Hz and quantize RSSI to 2 dBm; occupancy accuracy retained, localization escalation degrades below baseline.",
+      "permissionless": false,
+      "score": 0.7
+    },
+    "provenance": [
+      "sha256:a1b2c3d4e5f60718",
+      "sha256:0918273645fedcba"
+    ],
+    "references": [
+      "EXP-001 report (results/EXP-001/)"
+    ],
+    "reproducibility": {
+      "independent_runs": 2,
+      "within_ci": true
+    },
+    "signals": [
+      {
+        "android_permission": "ACCESS_FINE_LOCATION",
+        "family": "network",
+        "name": "wifi_rssi",
+        "sampling": "every 5 s"
+      },
+      {
+        "android_permission": "none",
+        "family": "battery",
+        "name": "battery_temperature",
+        "sampling": "1 Hz"
+      },
+      {
+        "android_permission": "none",
+        "family": "thermal",
+        "name": "skin_temperature",
+        "sampling": "1 Hz"
+      },
+      {
+        "android_permission": "none",
+        "family": "imu",
+        "name": "linear_acceleration",
+        "sampling": "100 Hz"
+      }
+    ],
+    "status": "positive",
+    "supported_devices": [
+      "Pixel 8",
+      "Galaxy S24",
+      "Redmi Note 13"
+    ],
+    "task": "room occupancy: 0 / 1 / 2 / 3+",
+    "training_protocol": "EXP-001",
+    "unsupported_devices": [],
+    "valid_until": "2027-01-19",
+    "validation_protocol": "EXP-001 cross-OEM/cross-room split (docs/architecture.md section 5)",
+    "version": "1.0.0"
+  },
+  "sustained_contention_v1": {
+    "composition_operator": "temporal-integration",
+    "date_created": "2026-07-19",
+    "depends_on": [
+      "cpu_contention_sensor_v1"
+    ],
+    "description": "Aggregates the CPU contention sensor over 3 consecutive windows to report sustained co-tenancy. Built by the capability algebra (temporal-integration, confidence upper bound 0.9943); not yet independently falsified, hence experimental.",
+    "energy_mj": 730.293,
+    "id": "sustained_contention_v1",
+    "last_verified": "2026-07-19",
+    "latency_ms": 146.058,
+    "limitations": [
+      "Algebra bound only; awaiting its own falsification run."
+    ],
+    "name": "Sustained CPU Contention (temporal integration)",
+    "references": [
+      "ccs/composition.py temporal_integrate"
+    ],
+    "signals": [
+      {
+        "android_permission": "none",
+        "family": "cpu",
+        "name": "loop_timing"
+      }
+    ],
+    "status": "experimental",
+    "task": "sustained cpu contention over a 3-window horizon",
+    "valid_until": "2026-11-16",
+    "version": "1.0.0"
+  }
+}

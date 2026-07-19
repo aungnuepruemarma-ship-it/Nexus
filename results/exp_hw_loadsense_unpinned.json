@@ -1,0 +1,31 @@
+{
+  "status": "negative",
+  "passed": false,
+  "failure_type": "environment-bound",
+  "metrics": {
+    "accuracy": 0.2727,
+    "precision": 0.3841,
+    "recall": 0.2727,
+    "f1": 0.2931,
+    "roc_auc": 0.5819,
+    "n": 88
+  },
+  "baseline_best_acc": 0.25,
+  "baseline_best_signal": "majority",
+  "per_axis_accuracy": {
+    "time_block": 0.2727
+  },
+  "energy_mj": 132.161,
+  "latency_ms": 26.432,
+  "reproduced": false,
+  "notes": [
+    "collapses on invariance axes ['time_block']"
+  ],
+  "n_windows": 352,
+  "collect_seconds": 9.3,
+  "entry_valid": true,
+  "host": {
+    "processor": "x86_64",
+    "python": "3.11.15"
+  }
+}

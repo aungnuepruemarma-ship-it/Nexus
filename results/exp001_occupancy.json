@@ -1,0 +1,120 @@
+{
+  "screening": {
+    "label_entropy_bits": 2.0,
+    "n_survivors": 14,
+    "n_screened_out": 0,
+    "n_pruned": 0,
+    "top": [
+      {
+        "signals": [
+          "room_echo"
+        ],
+        "mi_bits": 1.0,
+        "mi_per_mj": 1.0,
+        "info_frac": 0.5
+      },
+      {
+        "signals": [
+          "thermal"
+        ],
+        "mi_bits": 0.6584,
+        "mi_per_mj": 0.658368,
+        "info_frac": 0.329
+      },
+      {
+        "signals": [
+          "room_echo",
+          "thermal"
+        ],
+        "mi_bits": 1.1906,
+        "mi_per_mj": 0.595325,
+        "info_frac": 0.595
+      },
+      {
+        "signals": [
+          "imu",
+          "room_echo"
+        ],
+        "mi_bits": 1.3168,
+        "mi_per_mj": 0.329207,
+        "info_frac": 0.658
+      },
+      {
+        "signals": [
+          "imu"
+        ],
+        "mi_bits": 0.9214,
+        "mi_per_mj": 0.307136,
+        "info_frac": 0.461
+      },
+      {
+        "signals": [
+          "imu",
+          "room_echo",
+          "thermal"
+        ],
+        "mi_bits": 1.4486,
+        "mi_per_mj": 0.289712,
+        "info_frac": 0.724
+      }
+    ]
+  },
+  "real_candidate": {
+    "signals": [
+      "wifi_rssi",
+      "thermal",
+      "imu"
+    ],
+    "passed": true,
+    "status": "positive",
+    "failure_type": null,
+    "metrics": {
+      "accuracy": 0.8562,
+      "precision": 0.8603,
+      "recall": 0.8562,
+      "f1": 0.8554,
+      "roc_auc": 0.9766,
+      "n": 320
+    },
+    "baseline_best_acc": 0.7906,
+    "baseline_best_signal": "wifi_rssi",
+    "per_axis_accuracy": {
+      "oem": 0.826,
+      "room": 0.8844
+    },
+    "energy_mj": 13.0,
+    "latency_ms": 3.0,
+    "reproduced": true,
+    "notes": []
+  },
+  "trap_candidate": {
+    "signals": [
+      "room_echo"
+    ],
+    "passed": false,
+    "status": "unstable",
+    "failure_type": "environment-bound",
+    "metrics": {
+      "accuracy": 0.25,
+      "precision": 0.0625,
+      "recall": 0.25,
+      "f1": 0.1,
+      "roc_auc": 0.5,
+      "n": 320
+    },
+    "baseline_best_acc": 0.7906,
+    "baseline_best_signal": "wifi_rssi",
+    "per_axis_accuracy": {
+      "oem": 1.0,
+      "room": 0.25
+    },
+    "energy_mj": 2.0,
+    "latency_ms": 1.5,
+    "reproduced": false,
+    "notes": [
+      "fails invariance axes ['room']; holds on ['oem']; scoped unstable"
+    ]
+  },
+  "certified_entry_valid": true,
+  "certified_entry_errors": []
+}

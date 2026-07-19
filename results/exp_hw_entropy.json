@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "status": "positive",
+  "report": {
+    "n_raw_bits": 400000,
+    "n_whitened_bits": 100222,
+    "raw_min_entropy": 0.96818,
+    "whitened_min_entropy": 0.93543,
+    "raw_monobit_bias": 0.0066,
+    "whitened_monobit_bias": 0.00193,
+    "whitened_runs_z": -0.59529,
+    "whitened_chi2_bytes": 246.37208,
+    "whitened_compression": 1.00088,
+    "throughput_bits_per_s": 6011.23867
+  },
+  "thresholds": {
+    "min_entropy": 0.9,
+    "monobit_bias": 0.01,
+    "runs_z": 3.0,
+    "compression": 0.95,
+    "chi2_bytes": 293.25
+  },
+  "entry_valid": true,
+  "entry_errors": [],
+  "host": {
+    "machine": "x86_64",
+    "processor": "x86_64",
+    "python": "3.11.15"
+  }
+}

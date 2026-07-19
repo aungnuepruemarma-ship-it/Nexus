@@ -1,0 +1,87 @@
+{
+  "screening": {
+    "n_windows": 2880,
+    "n_signals": 4,
+    "median_s": 0.0773,
+    "windows_per_s": 37247
+  },
+  "falsification": {
+    "median_s": 3.598,
+    "status": "positive",
+    "accuracy": 0.8562
+  },
+  "capabilities": [
+    {
+      "id": "battery_light",
+      "status": "negative",
+      "accuracy": null,
+      "energy_mj": null,
+      "latency_ms": null,
+      "privacy": null,
+      "valid_until": null
+    },
+    {
+      "id": "cpu_contention_sensor_v1",
+      "status": "positive",
+      "accuracy": 0.9432,
+      "energy_mj": 243.431,
+      "latency_ms": 48.686,
+      "privacy": 0.7,
+      "valid_until": "2026-11-16"
+    },
+    {
+      "id": "cpu_contention_unpinned_v1",
+      "status": "negative",
+      "accuracy": null,
+      "energy_mj": null,
+      "latency_ms": null,
+      "privacy": null,
+      "valid_until": null
+    },
+    {
+      "id": "cpu_jitter_entropy_v1",
+      "status": "positive",
+      "accuracy": 0.9354,
+      "energy_mj": 0.0,
+      "latency_ms": 0.166355,
+      "privacy": 0.7,
+      "valid_until": "2027-01-19"
+    },
+    {
+      "id": "occupancy_room_echo_trap",
+      "status": "unstable",
+      "accuracy": null,
+      "energy_mj": null,
+      "latency_ms": null,
+      "privacy": null,
+      "valid_until": null
+    },
+    {
+      "id": "occupancy_sim_v1",
+      "status": "positive",
+      "accuracy": 0.8562,
+      "energy_mj": 13.0,
+      "latency_ms": 3.0,
+      "privacy": 1.0,
+      "valid_until": "2027-01-15"
+    },
+    {
+      "id": "occupancy_v1",
+      "status": "positive",
+      "accuracy": 0.91,
+      "energy_mj": 12,
+      "latency_ms": 18,
+      "privacy": 0.7,
+      "valid_until": "2027-01-19"
+    },
+    {
+      "id": "sustained_contention_v1",
+      "status": "experimental",
+      "accuracy": null,
+      "energy_mj": 730.293,
+      "latency_ms": 146.058,
+      "privacy": null,
+      "valid_until": "2026-11-16"
+    }
+  ]
+}
