@@ -1,0 +1,21 @@
+# systemd timer alternative: run ONE discovery cycle on a schedule (instead of the
+# always-on daemon). Pairs with nexus-dreamer-oneshot.service. Good for servers where you
+# prefer a scheduler-driven tick over a resident process. Default: every 5 minutes.
+#
+# Install:
+#   cp deploy/nexus-dreamer.timer deploy/nexus-dreamer-oneshot.service ~/.config/systemd/user/
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now nexus-dreamer.timer
+#   systemctl --user list-timers | grep nexus
+
+[Unit]
+Description=Run one Nexus discovery cycle on a schedule
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min          # change to 1h for hourly
+AccuracySec=30s
+Persistent=true
+
+[Install]
+WantedBy=timers.target

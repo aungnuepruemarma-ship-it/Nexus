@@ -1,0 +1,36 @@
+# systemd (user) service: host the Nexus discovery daemon on a persistent machine.
+# The daemon itself handles the 5-minute cadence (DREAM_INTERVAL) and 280s per-run cap
+# (DREAM_TIMEOUT); systemd keeps it alive and restarts it on crash/reboot.
+#
+# Install (as the user who owns the checkout):
+#   mkdir -p ~/.config/systemd/user
+#   cp deploy/nexus-dreamer.service ~/.config/systemd/user/
+#   # edit WorkingDirectory / paths below to match your checkout, then:
+#   loginctl enable-linger "$USER"          # run without being logged in
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now nexus-dreamer
+#   journalctl --user -u nexus-dreamer -f   # watch it
+
+[Unit]
+Description=Nexus Hardware Dreaming Engine (autonomous discovery loop)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# EDIT these three paths for your machine:
+WorkingDirectory=%h/nexus
+Environment=PYTHONPATH=%h/nexus
+Environment=HF_HOME=%h/.cache/huggingface
+# Cadence + safety (defaults match the daemon):
+Environment=DREAM_INTERVAL=300
+Environment=DREAM_TIMEOUT=280
+Environment=DREAM_BRANCH=claude/capability-discovery-platform-0cti9v
+# The daemon commits and pushes; git must be able to auth non-interactively on this host
+# (SSH key in the agent, or a credential helper / PAT). Test `git push` manually first.
+ExecStart=/bin/bash %h/nexus/scripts/dream_daemon.sh
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=default.target

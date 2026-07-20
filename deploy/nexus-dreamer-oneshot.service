@@ -1,0 +1,17 @@
+# Oneshot service invoked by nexus-dreamer.timer: run a single discovery cycle, cap it at
+# 280s, then push any new laws. systemd's timer is the scheduler here (no internal loop).
+
+[Unit]
+Description=Nexus discovery — one cycle
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+# EDIT these paths for your machine:
+WorkingDirectory=%h/nexus
+Environment=PYTHONPATH=%h/nexus
+Environment=HF_HOME=%h/.cache/huggingface
+# One capped loop pass, then push if it produced new commits:
+ExecStart=/usr/bin/timeout 280 python %h/nexus/scripts/dream_loop.py
+ExecStartPost=/bin/bash -lc 'cd %h/nexus && git push origin claude/capability-discovery-platform-0cti9v || true'

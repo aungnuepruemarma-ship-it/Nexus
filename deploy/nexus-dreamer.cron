@@ -1,0 +1,8 @@
+# crontab: run one Nexus discovery cycle every 5 minutes on a persistent machine.
+# Install:  crontab -e   (paste the line, edit $HOME/nexus + python path)
+#
+# flock prevents overlapping runs; `timeout 280` caps each cycle; output appends to the log;
+# it pushes new laws afterward. git must auth non-interactively (SSH key / credential helper).
+# For hourly instead of every-5-min, change `*/5 * * * *` to `0 * * * *`.
+
+*/5 * * * * cd "$HOME/nexus" && flock -n /tmp/nexus-dreamer.lock bash -lc 'PYTHONPATH="$HOME/nexus" HF_HOME="$HOME/.cache/huggingface" timeout 280 python scripts/dream_loop.py >> results/dream_daemon.log 2>&1; git push origin claude/capability-discovery-platform-0cti9v >> results/dream_daemon.log 2>&1'
