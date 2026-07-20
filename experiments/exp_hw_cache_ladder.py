@@ -66,7 +66,7 @@ def run(steps: int = 25_000, repeats: int = 3, verbose: bool = True):
 
     # "accuracy" for this non-classifier = cliff sharpness in [0,1] (how pronounced the
     # transition is), mirroring how entropy uses min-entropy in the accuracy slot.
-    sharpness = round(min(1.0, min_jump - 1.0), 4)
+    sharpness = round(max(0.0, min(1.0, min_jump - 1.0)), 4)
     status = "positive" if passed else "unstable"
     per_ms = round(1000.0 * elapsed / (2 * len(cl.DEFAULT_SIZES_BYTES)), 4)
     entry = {

@@ -174,11 +174,20 @@ Machine" (each its own git commit):
 | `timer_resolution_v1` | effective clock tick **~103 ns**, read overhead ~112 ns | positive |
 | `mem_bandwidth_v1` | sustained streaming bandwidth **~38 GB/s** (reproduced) | positive |
 | `syscall_latency_v1` | `sched_yield` round-trip **~sub-µs**, reproduces | positive |
+| `flops_throughput_v1` | sustained FP throughput **~0.7 GFLOP/s** (reproduced) | positive |
 
 ```bash
 python scripts/dream_loop.py            # autonomous: hypothesis → measure → certify → commit
 python scripts/dream_loop.py --no-model # heuristic hypotheses (skip the LLM)
+bash   scripts/dream_daemon.sh          # keep-awake daemon: run every 5 min (280s cap), auto-push
 ```
+
+**Keep-awake daemon.** `scripts/dream_daemon.sh` runs the loop on a **5-minute cycle**, caps
+each run at **280 s** (`timeout`), and pushes any new commits to GitHub — so the machine keeps
+building and committing on its own. Once the pending backlog is exhausted the cycle is a no-op
+until a dated certification lapses (decay) or a new `Dream` is added, at which point it resumes.
+(It keeps the *loop* awake; it cannot control a physical monitor's sleep — on a headless host
+there is no desktop session to keep on.)
 
 This is idea #10 (Automated Computer Scientist) made literal: the scientific method as
 software, generating hypotheses, running experiments, rejecting weak ideas, and publishing
@@ -196,6 +205,7 @@ validated capabilities into the registry on its own.
 | `timer_resolution_v1` | positive | effective clock granularity (autonomous discovery) |
 | `mem_bandwidth_v1` | positive | sustained memory bandwidth (autonomous discovery) |
 | `syscall_latency_v1` | positive | user→kernel round-trip cost (autonomous discovery) |
+| `flops_throughput_v1` | positive | sustained FP throughput (autonomous discovery) |
 | `occupancy_sim_v1` | positive | simulated occupancy, validates the pipeline |
 | `occupancy_v1` | positive | hand-written example |
 | `cpu_contention_unpinned_v1` | **negative** | `environment-bound` — real-hw non-capability |
@@ -256,7 +266,7 @@ registry entry:
 ```bash
 pip install numpy pandas scikit-learn jsonschema pyarrow pytest
 python scripts/run_all.py        # runs all experiments, writes results/ and registry/registry.json
-python -m pytest -q              # 42 tests
+python -m pytest -q              # 44 tests
 python scripts/dream_loop.py     # autonomous discovery loop (local model + web + git commits)
 python benchmark/bench_pipeline.py
 ```

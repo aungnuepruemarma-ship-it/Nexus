@@ -79,3 +79,15 @@ def test_membw_entry_valid():
     result, entry = run(iters=3, verbose=False)
     assert validate_entry(entry) == []
     assert entry["status"] in ("positive", "unstable")
+
+
+def test_flops_entry_valid():
+    from experiments.exp_hw_flops import run
+    result, entry = run(iters=3, verbose=False)
+    assert validate_entry(entry) == []
+    assert entry["status"] in ("positive", "unstable")
+
+
+def test_flops_in_backlog():
+    from ccs.dream.engine import default_backlog
+    assert "flops_throughput_v1" in {d.id for d in default_backlog()}

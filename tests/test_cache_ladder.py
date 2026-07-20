@@ -52,8 +52,9 @@ def test_pointer_chase_buffer_is_single_cycle():
 
 def test_cache_ladder_entry_is_schema_valid():
     # a short live run (small sweep) — fast enough for CI, exercises the real path end to end.
+    # steps kept high enough that even cache-resident chases clock a nonzero median.
     from experiments.exp_hw_cache_ladder import run
-    result, entry = run(steps=3_000, repeats=2, verbose=False)
+    result, entry = run(steps=12_000, repeats=2, verbose=False)
     assert entry is not None
     assert validate_entry(entry) == []
     assert result["status"] in ("positive", "unstable")
