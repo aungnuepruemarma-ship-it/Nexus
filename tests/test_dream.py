@@ -91,3 +91,17 @@ def test_flops_entry_valid():
 def test_flops_in_backlog():
     from ccs.dream.engine import default_backlog
     assert "flops_throughput_v1" in {d.id for d in default_backlog()}
+
+
+def test_mempattern_entry_valid():
+    from experiments.exp_hw_mempattern import run
+    result, entry = run(verbose=False)
+    assert validate_entry(entry) == []
+    assert entry["status"] in ("positive", "unstable")
+
+
+def test_mission_is_framed_into_backlog_and_prompts():
+    from ccs.dream.engine import MISSION, default_backlog
+    assert "laws of this machine" in MISSION.lower()
+    ids = {d.id for d in default_backlog()}
+    assert {"memory_access_penalty_v1", "flops_throughput_v1"} <= ids

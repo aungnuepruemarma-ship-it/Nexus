@@ -175,6 +175,12 @@ Machine" (each its own git commit):
 | `mem_bandwidth_v1` | sustained streaming bandwidth **~38 GB/s** (reproduced) | positive |
 | `syscall_latency_v1` | `sched_yield` round-trip **~sub-µs**, reproduces | positive |
 | `flops_throughput_v1` | sustained FP throughput **~0.7 GFLOP/s** (reproduced) | positive |
+| `memory_access_penalty_v1` | random access **~24× slower** than sequential (cache line + prefetch) | positive |
+
+The loop pursues an explicit **mission** (`ccs.dream.engine.MISSION`, mirrored in
+[`GOALS.md`](../GOALS.md)) that is framed into the model's system prompt every cycle:
+*discover the hidden laws of this machine, certify only what survives falsification, and keep
+building and committing new laws forever.*
 
 ```bash
 python scripts/dream_loop.py            # autonomous: hypothesis → measure → certify → commit
@@ -206,6 +212,7 @@ validated capabilities into the registry on its own.
 | `mem_bandwidth_v1` | positive | sustained memory bandwidth (autonomous discovery) |
 | `syscall_latency_v1` | positive | user→kernel round-trip cost (autonomous discovery) |
 | `flops_throughput_v1` | positive | sustained FP throughput (autonomous discovery) |
+| `memory_access_penalty_v1` | positive | random-vs-sequential access penalty (autonomous discovery) |
 | `occupancy_sim_v1` | positive | simulated occupancy, validates the pipeline |
 | `occupancy_v1` | positive | hand-written example |
 | `cpu_contention_unpinned_v1` | **negative** | `environment-bound` — real-hw non-capability |
@@ -266,7 +273,7 @@ registry entry:
 ```bash
 pip install numpy pandas scikit-learn jsonschema pyarrow pytest
 python scripts/run_all.py        # runs all experiments, writes results/ and registry/registry.json
-python -m pytest -q              # 44 tests
+python -m pytest -q              # 46 tests
 python scripts/dream_loop.py     # autonomous discovery loop (local model + web + git commits)
 python benchmark/bench_pipeline.py
 ```
