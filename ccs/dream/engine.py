@@ -30,6 +30,7 @@ class Dream:
     result_file: str              # results/<file>.json
     run: Callable[[], tuple]      # () -> (result_dict, entry_dict)
     prompt: str                   # hypothesis question posed to the model
+    topic: str = ""               # Wikipedia topic for the web-context lookup
 
 
 def default_backlog() -> list[Dream]:
@@ -37,19 +38,24 @@ def default_backlog() -> list[Dream]:
     from experiments.exp_hw_timer_resolution import run as run_timer
     from experiments.exp_hw_membw import run as run_membw
     from experiments.exp_hw_cache_ladder import run as run_cache
+    from experiments.exp_hw_syscall import run as run_syscall
     return [
+        Dream("syscall_latency_v1", "System-call round-trip cost", "EXP-HW-SYSCALL",
+              "exp_hw_syscall.json", run_syscall,
+              "In one sentence: what does timing a bare syscall back-to-back reveal about the "
+              "cost of crossing from user space into the kernel?", topic="System call"),
         Dream("timer_resolution_v1", "Effective clock resolution", "EXP-HW-TIMER-RES",
               "exp_hw_timer_resolution.json", run_timer,
               "In one sentence: what hidden 'law' does the smallest gap between two back-to-back "
-              "clock reads reveal about a CPU?"),
+              "clock reads reveal about a CPU?", topic="Clock signal"),
         Dream("mem_bandwidth_v1", "Streaming memory bandwidth", "EXP-HW-MEMBW",
               "exp_hw_membw.json", run_membw,
               "In one sentence: why does timing a read-modify-write over a buffer larger than "
-              "cache reveal the machine's true memory bandwidth?"),
+              "cache reveal the machine's true memory bandwidth?", topic="Memory bandwidth"),
         Dream("memory_hierarchy_v1", "Cache/DRAM hierarchy", "EXP-HW-CACHE-LADDER",
               "exp_hw_cache_ladder.json", run_cache,
               "In one sentence: how does pointer-chase latency vs working-set size expose where "
-              "a CPU's caches end?"),
+              "a CPU's caches end?", topic="CPU cache"),
     ]
 
 
@@ -124,9 +130,13 @@ class DreamEngine:
     def _lookup(self, dream: Dream) -> dict:
         if self.web is None:
             return {"summary": None}
+        if dream.topic:
+            wiki = self.web.wiki(dream.topic)
+            if wiki.get("ok"):
+                return {"summary": wiki["extract"][:280], "source": f"wikipedia:{wiki.get('title')}"}
         res = self.web.search(f"{dream.title} CPU microbenchmark")
         if res.get("ok") and res.get("results"):
-            return {"summary": res["results"][0], "results": res["results"]}
+            return {"summary": res["results"][0], "source": "duckduckgo"}
         return {"summary": None, "error": res.get("error")}
 
     def _update_manifest(self, dream: Dream, result: dict, reg: Registry, validation: dict) -> None:

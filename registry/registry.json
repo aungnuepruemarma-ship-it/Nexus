@@ -560,6 +560,62 @@
     "valid_until": "2026-11-16",
     "version": "1.0.0"
   },
+  "syscall_latency_v1": {
+    "accuracy": 0.9955,
+    "confidence": 0.9955,
+    "date_created": "2026-07-20",
+    "description": "Measures the user->kernel->user cost of a bare syscall (sched_yield) on this host by timing it back-to-back. The designed use of sched_yield is scheduling; the latent capability is empirical measurement of the kernel-crossing cost.",
+    "energy_mj": 0.0,
+    "failure_modes": [
+      "Heavy scheduler contention widens spread past tolerance."
+    ],
+    "generalization": {
+      "note": "single-host measurement; this OS/CPU syscall path",
+      "ns_batch1": 323.27,
+      "ns_batch2": 321.8,
+      "spread": 0.0045
+    },
+    "half_life_days": 180,
+    "id": "syscall_latency_v1",
+    "last_verified": "2026-07-20",
+    "latency_ms": 0.000323,
+    "limitations": [
+      "Measured on one host (Linux 6.18) in a container; sched_yield with no runnable peer is a near-lower-bound on syscall cost, not a full context switch."
+    ],
+    "model": {
+      "features": "ns per sched_yield",
+      "kind": "timed back-to-back syscalls"
+    },
+    "name": "System-Call Round-Trip Cost (recovered from timing)",
+    "privacy_audit": {
+      "bystander_inference": "None \u2014 it times only its own syscalls.",
+      "disclosure_sensitive": false,
+      "escalation_gradient": "Syscall timing is a coarse covert-channel medium; not exploited here.",
+      "mitigations": "No action needed for self-measurement; untrusted code can be denied fine clocks.",
+      "permissionless": false,
+      "score": 1.0
+    },
+    "provenance": [],
+    "references": [
+      "lmbench lat_syscall"
+    ],
+    "reproducibility": {
+      "independent_runs": 2,
+      "within_ci": true
+    },
+    "signals": [
+      {
+        "android_permission": "none",
+        "family": "cpu",
+        "name": "syscall",
+        "sampling": "back-to-back sched_yield"
+      }
+    ],
+    "status": "positive",
+    "task": "recover the per-syscall round-trip cost (ns)",
+    "valid_until": "2027-01-16",
+    "version": "1.0.0"
+  },
   "timer_resolution_v1": {
     "accuracy": 1.0,
     "confidence": 1.0,

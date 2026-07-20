@@ -45,6 +45,21 @@ class WebBrowser:
         except Exception as e:
             return {"ok": False, "url": url, "error": f"{type(e).__name__}: {e}"}
 
+    def wiki(self, topic: str) -> dict:
+        """Fetch a one-paragraph summary of ``topic`` from the Wikipedia REST API (reliable)."""
+        if not self.enabled:
+            return {"ok": False, "topic": topic, "error": "web disabled"}
+        slug = quote_plus(topic.replace(" ", "_"))
+        try:
+            r = requests.get(f"https://en.wikipedia.org/api/rest_v1/page/summary/{slug}",
+                             timeout=self.timeout, headers={"User-Agent": _UA})
+            data = r.json() if r.ok else {}
+            extract = _WS.sub(" ", data.get("extract", "")).strip()
+            return {"ok": bool(extract), "topic": topic, "title": data.get("title"),
+                    "extract": extract, "status": r.status_code}
+        except Exception as e:
+            return {"ok": False, "topic": topic, "error": f"{type(e).__name__}: {e}"}
+
     def search(self, query: str, max_results: int = 3) -> dict:
         """Best-effort web search via the DuckDuckGo HTML endpoint."""
         if not self.enabled:

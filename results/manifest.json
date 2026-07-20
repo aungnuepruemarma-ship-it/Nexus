@@ -285,15 +285,31 @@
         "machine": "x86_64",
         "python": "3.11.15"
       }
+    },
+    "EXP-HW-SYSCALL": {
+      "passed": true,
+      "status": "positive",
+      "ns_per_syscall": 322.54,
+      "ns_batch1": 323.27,
+      "ns_batch2": 321.8,
+      "spread": 0.0045,
+      "reproduced": true,
+      "threshold_ns": 100000.0,
+      "entry_valid": true,
+      "entry_errors": [],
+      "host": {
+        "machine": "x86_64",
+        "python": "3.11.15"
+      }
     }
   },
   "registry_summary": {
-    "positive": 7,
+    "positive": 8,
     "negative": 3,
     "unstable": 1,
     "deprecated": 0,
     "experimental": 1,
-    "total": 12,
+    "total": 13,
     "has_cycle": false
   },
   "registry_valid": true,
