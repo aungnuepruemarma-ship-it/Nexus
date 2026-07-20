@@ -197,6 +197,63 @@
     "valid_until": "2027-01-19",
     "version": "1.0.0"
   },
+  "flops_throughput_v1": {
+    "accuracy": 0.9816,
+    "confidence": 0.9816,
+    "date_created": "2026-07-20",
+    "description": "Measures sustained floating-point throughput by timing a fused multiply-add streamed over 4M-element arrays. The designed use of arithmetic is computation; the latent capability is empirical GFLOP/s characterization of the actual machine.",
+    "energy_mj": 320.0,
+    "failure_modes": [
+      "Heavy neighbor CPU contention widens run-to-run spread past tolerance."
+    ],
+    "generalization": {
+      "gflops_run1": 0.643,
+      "gflops_run2": 0.655,
+      "note": "single-host measurement; this machine's FP pipeline + memory",
+      "spread": 0.0184
+    },
+    "half_life_days": 120,
+    "id": "flops_throughput_v1",
+    "last_verified": "2026-07-20",
+    "latency_ms": 492.9902,
+    "limitations": [
+      "Measured on one host in a container; the number reflects NumPy's vectorized loop (memory-bound at this array size), a lower bound on peak FLOP/s.",
+      "Co-tenant CPU load lowers the observed throughput."
+    ],
+    "model": {
+      "features": "flops / second",
+      "kind": "timed streaming multiply-add"
+    },
+    "name": "Sustained FP Throughput (recovered from timing)",
+    "privacy_audit": {
+      "bystander_inference": "None \u2014 it computes only on its own arrays; it reveals the host's FP throughput, not any neighbor's data.",
+      "disclosure_sensitive": false,
+      "escalation_gradient": "Sustained-throughput probing is also how a noisy CPU neighbor is characterized (see exp_hw_workload_id); no cross-tenant attack is shown here.",
+      "mitigations": "CPU quota / cgroup limits; schedule compute-heavy tenants apart.",
+      "permissionless": false,
+      "score": 1.0
+    },
+    "provenance": [],
+    "references": [
+      "LINPACK / peak-FLOP microbenchmarking"
+    ],
+    "reproducibility": {
+      "independent_runs": 2,
+      "within_ci": true
+    },
+    "signals": [
+      {
+        "android_permission": "none",
+        "family": "cpu",
+        "name": "compute",
+        "sampling": "FMA over 4M float64"
+      }
+    ],
+    "status": "positive",
+    "task": "recover sustained floating-point throughput (GFLOP/s)",
+    "valid_until": "2026-11-17",
+    "version": "1.0.0"
+  },
   "mem_bandwidth_v1": {
     "accuracy": 0.7251,
     "confidence": 0.7251,

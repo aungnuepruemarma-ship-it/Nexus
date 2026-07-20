@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "status": "positive",
+  "gflops": 0.649,
+  "gflops_run1": 0.643,
+  "gflops_run2": 0.655,
+  "spread": 0.0184,
+  "reproduced": true,
+  "thresholds": {
+    "min_gflops": 0.2,
+    "max_spread": 0.35
+  },
+  "entry_valid": true,
+  "entry_errors": [],
+  "host": {
+    "machine": "x86_64",
+    "python": "3.11.15"
+  }
+}

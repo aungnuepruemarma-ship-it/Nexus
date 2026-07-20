@@ -39,7 +39,12 @@ def default_backlog() -> list[Dream]:
     from experiments.exp_hw_membw import run as run_membw
     from experiments.exp_hw_cache_ladder import run as run_cache
     from experiments.exp_hw_syscall import run as run_syscall
+    from experiments.exp_hw_flops import run as run_flops
     return [
+        Dream("flops_throughput_v1", "Sustained FP throughput", "EXP-HW-FLOPS",
+              "exp_hw_flops.json", run_flops,
+              "In one sentence: what does timing a streamed multiply-add over large arrays "
+              "reveal about a CPU's real floating-point throughput?", topic="FLOPS"),
         Dream("syscall_latency_v1", "System-call round-trip cost", "EXP-HW-SYSCALL",
               "exp_hw_syscall.json", run_syscall,
               "In one sentence: what does timing a bare syscall back-to-back reveal about the "

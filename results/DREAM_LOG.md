@@ -14,3 +14,8 @@ Machine-written by `ccs.dream.DreamEngine`. Each entry is one self-experiment: a
 - **Hypothesis (model):** The cost of crossing from user space into the kernel is a challenge that can be easily overlooked, as it's typically an implicit cost that is not immediately apparent.
 - **Web context:** In computing, a system call (syscall) is the programmatic way in which a computer program requests a service from the operating system on which it is executed. This may include hardware-related services, creation and execution of new processes, and communication with integral ker
 - **Verdict:** `positive`, score 0.9955 — System-call round-trip cost. Schema-valid: True.
+
+## flops_throughput_v1 — POSITIVE  (2026-07-20T05:48:16)
+- **Hypothesis (model):** A CPU's real-time floating-point throughput reveals that it is able to execute multiple instructions concurrently, even on extremely large arrays, demonstrating its near-immediate and efficient processing capabilities.
+- **Web context:** Floating point operations per second is a measure of computer performance or compute in computing, useful in fields of scientific computations that require floating-point calculations.
+- **Verdict:** `positive`, score 0.9816 — Sustained FP throughput. Schema-valid: True.
