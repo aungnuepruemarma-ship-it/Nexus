@@ -29,3 +29,8 @@ Machine-written by `ccs.dream.DreamEngine`. Each entry is one self-experiment: a
 - **Hypothesis (model):** A self-reinforcing loop of measuring and measuring, iteratively refining its understanding of the world.
 - **Web context:** The scientific method is an empirical method for acquiring knowledge through careful observation, rigorous skepticism, hypothesis testing, and experimental validation. Developed from ancient and medieval practices, it acknowledges that cognitive assumptions can distort the interp
 - **Verdict:** `positive`, score 1.0 — Discovery-loop health (self-monitoring). Schema-valid: True.
+
+## mem_bandwidth_16mib_v1 — POSITIVE  (2026-07-20T06:31:46)
+- **Hypothesis (model):** Memory bandwidth is affected by the CPU's cache size, with larger cache sizes requiring more bandwidth to store data.
+- **Web context:** Memory bandwidth is the rate at which data can be read from or stored into a semiconductor memory by a processor. Memory bandwidth is usually expressed in units of bytes/second, though this can vary for systems with natural data sizes that are not a multiple of the commonly used 
+- **Verdict:** `positive`, score 0.934 — Streaming bandwidth @ 16mib. Schema-valid: True.

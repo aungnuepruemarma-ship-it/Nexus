@@ -1,0 +1,26 @@
+[
+  {
+    "id": "mem_bandwidth_16mib_v1",
+    "priority": 1.0,
+    "source": "generated",
+    "reason": "generated parameter point not yet in registry"
+  },
+  {
+    "id": "mem_bandwidth_128mib_v1",
+    "priority": 1.0,
+    "source": "generated",
+    "reason": "generated parameter point not yet in registry"
+  },
+  {
+    "id": "mem_latency_2mib_v1",
+    "priority": 1.0,
+    "source": "generated",
+    "reason": "generated parameter point not yet in registry"
+  },
+  {
+    "id": "mem_latency_32mib_v1",
+    "priority": 1.0,
+    "source": "generated",
+    "reason": "generated parameter point not yet in registry"
+  }
+]

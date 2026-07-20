@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "status": "positive",
+  "gbps": 45.333,
+  "gbps_run1": 43.787,
+  "gbps_run2": 46.88,
+  "spread": 0.066,
+  "reproduced": true,
+  "entry_valid": true,
+  "review": {
+    "verdict": "accept",
+    "approved": true,
+    "blockers": [],
+    "concerns": [],
+    "reviews": [
+      {
+        "reviewer": "Statistician",
+        "blocking": true,
+        "ok": true,
+        "note": "reproduces across independent runs"
+      },
+      {
+        "reviewer": "Skeptic",
+        "blocking": false,
+        "ok": true,
+        "note": "adds signal beyond the baseline"
+      },
+      {
+        "reviewer": "Methodologist",
+        "blocking": false,
+        "ok": true,
+        "note": "generalization/scope recorded"
+      },
+      {
+        "reviewer": "SafetyOfficer",
+        "blocking": true,
+        "ok": true,
+        "note": "dual-use audit present (score 0.7, permissionless=True)"
+      },
+      {
+        "reviewer": "PeerModel",
+        "blocking": false,
+        "ok": true,
+        "note": "The original sentence appears to be describing a streaming buffer, which is a type of buffer that stores data for streaming purposes. The phrase \"generated\" is a bit vague, and it's unclear whether the buffer is being used for streaming, ca"
+      }
+    ]
+  }
+}

@@ -1,0 +1,330 @@
+{
+  "n_nodes": 16,
+  "n_edges": 39,
+  "families": {
+    "battery": 2,
+    "capability": 2,
+    "cpu": 8,
+    "imu": 2,
+    "memory": 4,
+    "network": 2,
+    "thermal": 2
+  },
+  "nodes": {
+    "battery_light": {
+      "status": "negative",
+      "families": [
+        "battery"
+      ],
+      "task": "ambient light level: dark / dim / bright"
+    },
+    "cpu_contention_sensor_v1": {
+      "status": "positive",
+      "families": [
+        "cpu"
+      ],
+      "task": "cpu contention level: 0 / 1 / 2 / 3 extra busy cores"
+    },
+    "cpu_contention_unpinned_v1": {
+      "status": "negative",
+      "families": [
+        "cpu"
+      ],
+      "task": "cpu contention level: 0 / 1 / 2 / 3 extra busy cores"
+    },
+    "cpu_jitter_entropy_v1": {
+      "status": "positive",
+      "families": [
+        "cpu"
+      ],
+      "task": "generate unpredictable bits (entropy source)"
+    },
+    "experiment_loop_health_v1": {
+      "status": "positive",
+      "families": [
+        "capability"
+      ],
+      "task": "recover discovery-loop health (experiments, success rate, cadence, commits)"
+    },
+    "flops_throughput_v1": {
+      "status": "positive",
+      "families": [
+        "cpu"
+      ],
+      "task": "recover sustained floating-point throughput (GFLOP/s)"
+    },
+    "mem_bandwidth_v1": {
+      "status": "positive",
+      "families": [
+        "memory"
+      ],
+      "task": "recover sustained streaming memory bandwidth (GB/s)"
+    },
+    "memory_access_penalty_v1": {
+      "status": "positive",
+      "families": [
+        "memory"
+      ],
+      "task": "recover the random/sequential memory-access penalty ratio"
+    },
+    "memory_hierarchy_v1": {
+      "status": "positive",
+      "families": [
+        "memory"
+      ],
+      "task": "recover the cache/memory hierarchy (level-transition boundary + latencies)"
+    },
+    "occupancy_room_echo_trap": {
+      "status": "unstable",
+      "families": [
+        "capability"
+      ],
+      "task": "room occupancy: 0 / 1 / 2 / 3+"
+    },
+    "occupancy_sim_v1": {
+      "status": "positive",
+      "families": [
+        "imu",
+        "network",
+        "thermal"
+      ],
+      "task": "room occupancy: 0 / 1 / 2 / 3+"
+    },
+    "occupancy_v1": {
+      "status": "positive",
+      "families": [
+        "battery",
+        "imu",
+        "network",
+        "thermal"
+      ],
+      "task": "room occupancy: 0 / 1 / 2 / 3+"
+    },
+    "sustained_contention_v1": {
+      "status": "experimental",
+      "families": [
+        "cpu"
+      ],
+      "task": "sustained cpu contention over a 3-window horizon"
+    },
+    "syscall_latency_v1": {
+      "status": "positive",
+      "families": [
+        "cpu"
+      ],
+      "task": "recover the per-syscall round-trip cost (ns)"
+    },
+    "timer_resolution_v1": {
+      "status": "positive",
+      "families": [
+        "cpu"
+      ],
+      "task": "recover the effective clock resolution + read overhead"
+    },
+    "workload_type_classifier_v1": {
+      "status": "negative",
+      "families": [
+        "cpu",
+        "memory"
+      ],
+      "task": "co-located workload type: idle / cpu_bound / memory_bound"
+    }
+  },
+  "edges": [
+    {
+      "a": "sustained_contention_v1",
+      "b": "cpu_contention_sensor_v1",
+      "kind": "depends_on"
+    },
+    {
+      "a": "battery_light",
+      "b": "occupancy_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_contention_sensor_v1",
+      "b": "cpu_contention_unpinned_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_contention_sensor_v1",
+      "b": "cpu_contention_unpinned_v1",
+      "kind": "shares_reference"
+    },
+    {
+      "a": "cpu_contention_sensor_v1",
+      "b": "cpu_jitter_entropy_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_contention_sensor_v1",
+      "b": "flops_throughput_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_contention_sensor_v1",
+      "b": "sustained_contention_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_contention_sensor_v1",
+      "b": "syscall_latency_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_contention_sensor_v1",
+      "b": "timer_resolution_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_contention_sensor_v1",
+      "b": "workload_type_classifier_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_contention_unpinned_v1",
+      "b": "cpu_jitter_entropy_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_contention_unpinned_v1",
+      "b": "flops_throughput_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_contention_unpinned_v1",
+      "b": "sustained_contention_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_contention_unpinned_v1",
+      "b": "syscall_latency_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_contention_unpinned_v1",
+      "b": "timer_resolution_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_contention_unpinned_v1",
+      "b": "workload_type_classifier_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_jitter_entropy_v1",
+      "b": "flops_throughput_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_jitter_entropy_v1",
+      "b": "sustained_contention_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_jitter_entropy_v1",
+      "b": "syscall_latency_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_jitter_entropy_v1",
+      "b": "timer_resolution_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "cpu_jitter_entropy_v1",
+      "b": "workload_type_classifier_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "experiment_loop_health_v1",
+      "b": "occupancy_room_echo_trap",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "flops_throughput_v1",
+      "b": "sustained_contention_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "flops_throughput_v1",
+      "b": "syscall_latency_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "flops_throughput_v1",
+      "b": "timer_resolution_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "flops_throughput_v1",
+      "b": "workload_type_classifier_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "mem_bandwidth_v1",
+      "b": "memory_access_penalty_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "mem_bandwidth_v1",
+      "b": "memory_hierarchy_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "mem_bandwidth_v1",
+      "b": "workload_type_classifier_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "memory_access_penalty_v1",
+      "b": "memory_hierarchy_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "memory_access_penalty_v1",
+      "b": "workload_type_classifier_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "memory_hierarchy_v1",
+      "b": "workload_type_classifier_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "occupancy_sim_v1",
+      "b": "occupancy_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "sustained_contention_v1",
+      "b": "syscall_latency_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "sustained_contention_v1",
+      "b": "timer_resolution_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "sustained_contention_v1",
+      "b": "workload_type_classifier_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "syscall_latency_v1",
+      "b": "timer_resolution_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "syscall_latency_v1",
+      "b": "workload_type_classifier_v1",
+      "kind": "shares_signal"
+    },
+    {
+      "a": "timer_resolution_v1",
+      "b": "workload_type_classifier_v1",
+      "kind": "shares_signal"
+    }
+  ]
+}

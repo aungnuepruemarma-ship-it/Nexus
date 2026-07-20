@@ -1,0 +1,60 @@
+graph TD
+  battery_light["battery_light"]:::neg
+  cpu_contention_sensor_v1["cpu_contention_sensor_v1"]:::pos
+  cpu_contention_unpinned_v1["cpu_contention_unpinned_v1"]:::neg
+  cpu_jitter_entropy_v1["cpu_jitter_entropy_v1"]:::pos
+  experiment_loop_health_v1["experiment_loop_health_v1"]:::pos
+  flops_throughput_v1["flops_throughput_v1"]:::pos
+  mem_bandwidth_v1["mem_bandwidth_v1"]:::pos
+  memory_access_penalty_v1["memory_access_penalty_v1"]:::pos
+  memory_hierarchy_v1["memory_hierarchy_v1"]:::pos
+  occupancy_room_echo_trap["occupancy_room_echo_trap"]:::unst
+  occupancy_sim_v1["occupancy_sim_v1"]:::pos
+  occupancy_v1["occupancy_v1"]:::pos
+  sustained_contention_v1["sustained_contention_v1"]:::exp
+  syscall_latency_v1["syscall_latency_v1"]:::pos
+  timer_resolution_v1["timer_resolution_v1"]:::pos
+  workload_type_classifier_v1["workload_type_classifier_v1"]:::neg
+  sustained_contention_v1 -->|depends| cpu_contention_sensor_v1
+  battery_light -.->|signal| occupancy_v1
+  cpu_contention_sensor_v1 -.->|signal| cpu_contention_unpinned_v1
+  cpu_contention_sensor_v1 -.->|ref| cpu_contention_unpinned_v1
+  cpu_contention_sensor_v1 -.->|signal| cpu_jitter_entropy_v1
+  cpu_contention_sensor_v1 -.->|signal| flops_throughput_v1
+  cpu_contention_sensor_v1 -.->|signal| sustained_contention_v1
+  cpu_contention_sensor_v1 -.->|signal| syscall_latency_v1
+  cpu_contention_sensor_v1 -.->|signal| timer_resolution_v1
+  cpu_contention_sensor_v1 -.->|signal| workload_type_classifier_v1
+  cpu_contention_unpinned_v1 -.->|signal| cpu_jitter_entropy_v1
+  cpu_contention_unpinned_v1 -.->|signal| flops_throughput_v1
+  cpu_contention_unpinned_v1 -.->|signal| sustained_contention_v1
+  cpu_contention_unpinned_v1 -.->|signal| syscall_latency_v1
+  cpu_contention_unpinned_v1 -.->|signal| timer_resolution_v1
+  cpu_contention_unpinned_v1 -.->|signal| workload_type_classifier_v1
+  cpu_jitter_entropy_v1 -.->|signal| flops_throughput_v1
+  cpu_jitter_entropy_v1 -.->|signal| sustained_contention_v1
+  cpu_jitter_entropy_v1 -.->|signal| syscall_latency_v1
+  cpu_jitter_entropy_v1 -.->|signal| timer_resolution_v1
+  cpu_jitter_entropy_v1 -.->|signal| workload_type_classifier_v1
+  experiment_loop_health_v1 -.->|signal| occupancy_room_echo_trap
+  flops_throughput_v1 -.->|signal| sustained_contention_v1
+  flops_throughput_v1 -.->|signal| syscall_latency_v1
+  flops_throughput_v1 -.->|signal| timer_resolution_v1
+  flops_throughput_v1 -.->|signal| workload_type_classifier_v1
+  mem_bandwidth_v1 -.->|signal| memory_access_penalty_v1
+  mem_bandwidth_v1 -.->|signal| memory_hierarchy_v1
+  mem_bandwidth_v1 -.->|signal| workload_type_classifier_v1
+  memory_access_penalty_v1 -.->|signal| memory_hierarchy_v1
+  memory_access_penalty_v1 -.->|signal| workload_type_classifier_v1
+  memory_hierarchy_v1 -.->|signal| workload_type_classifier_v1
+  occupancy_sim_v1 -.->|signal| occupancy_v1
+  sustained_contention_v1 -.->|signal| syscall_latency_v1
+  sustained_contention_v1 -.->|signal| timer_resolution_v1
+  sustained_contention_v1 -.->|signal| workload_type_classifier_v1
+  syscall_latency_v1 -.->|signal| timer_resolution_v1
+  syscall_latency_v1 -.->|signal| workload_type_classifier_v1
+  timer_resolution_v1 -.->|signal| workload_type_classifier_v1
+classDef pos fill:#1b5e20,color:#fff;
+classDef neg fill:#7f1d1d,color:#fff;
+classDef unst fill:#8a6d00,color:#fff;
+classDef exp fill:#1e3a5f,color:#fff;

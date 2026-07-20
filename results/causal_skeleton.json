@@ -1,0 +1,224 @@
+{
+  "n_vars": 12,
+  "n_direct_edges": 14,
+  "n_mediated_pairs": 14,
+  "n_collider_suspects": 7,
+  "direct_edges": [
+    {
+      "a": "mem_probe.0.mean",
+      "b": "mem_probe.0.median",
+      "partial": 1.0,
+      "marginal": 0.975
+    },
+    {
+      "a": "compute_probe.0.mean",
+      "b": "compute_probe.0.mean_over_median",
+      "partial": 0.999,
+      "marginal": 0.733
+    },
+    {
+      "a": "compute_probe.0.mean",
+      "b": "compute_probe.0.median",
+      "partial": 0.997,
+      "marginal": 0.955
+    },
+    {
+      "a": "compute_probe.0.median",
+      "b": "compute_probe.0.mean_over_median",
+      "partial": -0.997,
+      "marginal": 0.499
+    },
+    {
+      "a": "mem_probe.0.median",
+      "b": "mem_probe.0.mean_over_median",
+      "partial": -0.987,
+      "marginal": 0.533
+    },
+    {
+      "a": "mem_probe.0.mean",
+      "b": "mem_probe.0.mean_over_median",
+      "partial": 0.986,
+      "marginal": 0.708
+    },
+    {
+      "a": "compute_probe.0.mean",
+      "b": "compute_probe.0.std",
+      "partial": 0.854,
+      "marginal": 0.944
+    },
+    {
+      "a": "compute_probe.0.std",
+      "b": "compute_probe.0.mean_over_median",
+      "partial": -0.841,
+      "marginal": 0.592
+    },
+    {
+      "a": "compute_probe.0.std",
+      "b": "compute_probe.0.median",
+      "partial": -0.838,
+      "marginal": 0.941
+    },
+    {
+      "a": "mem_probe.0.mean",
+      "b": "mem_probe.0.std",
+      "partial": 0.651,
+      "marginal": 0.655
+    },
+    {
+      "a": "mem_probe.0.std",
+      "b": "mem_probe.0.median",
+      "partial": -0.643,
+      "marginal": 0.504
+    },
+    {
+      "a": "compute_probe.0.mean_over_median",
+      "b": "compute_probe.0.p90_over_median",
+      "partial": -0.616,
+      "marginal": 0.66
+    },
+    {
+      "a": "mem_probe.0.std",
+      "b": "mem_probe.0.mean_over_median",
+      "partial": -0.527,
+      "marginal": 0.851
+    },
+    {
+      "a": "mem_probe.0.mean_over_median",
+      "b": "mem_probe.0.p90_over_median",
+      "partial": 0.384,
+      "marginal": 0.525
+    }
+  ],
+  "mediated_pairs": [
+    {
+      "a": "compute_probe.0.median",
+      "b": "compute_probe.0.floor_ratio",
+      "partial": -0.029,
+      "marginal": 0.994
+    },
+    {
+      "a": "compute_probe.0.mean",
+      "b": "compute_probe.0.floor_ratio",
+      "partial": 0.103,
+      "marginal": 0.948
+    },
+    {
+      "a": "compute_probe.0.std",
+      "b": "compute_probe.0.floor_ratio",
+      "partial": -0.099,
+      "marginal": 0.94
+    },
+    {
+      "a": "mem_probe.0.median",
+      "b": "mem_probe.0.floor_ratio",
+      "partial": 0.169,
+      "marginal": 0.826
+    },
+    {
+      "a": "mem_probe.0.mean",
+      "b": "mem_probe.0.floor_ratio",
+      "partial": -0.144,
+      "marginal": 0.806
+    },
+    {
+      "a": "compute_probe.0.floor_ratio",
+      "b": "mem_probe.0.p90_over_median",
+      "partial": 0.125,
+      "marginal": 0.529
+    },
+    {
+      "a": "compute_probe.0.median",
+      "b": "mem_probe.0.p90_over_median",
+      "partial": -0.261,
+      "marginal": 0.526
+    },
+    {
+      "a": "compute_probe.0.std",
+      "b": "mem_probe.0.p90_over_median",
+      "partial": -0.21,
+      "marginal": 0.512
+    },
+    {
+      "a": "compute_probe.0.mean_over_median",
+      "b": "compute_probe.0.floor_ratio",
+      "partial": -0.092,
+      "marginal": 0.494
+    },
+    {
+      "a": "compute_probe.0.mean",
+      "b": "mem_probe.0.p90_over_median",
+      "partial": 0.254,
+      "marginal": 0.479
+    },
+    {
+      "a": "mem_probe.0.mean_over_median",
+      "b": "mem_probe.0.floor_ratio",
+      "partial": 0.182,
+      "marginal": 0.452
+    },
+    {
+      "a": "mem_probe.0.mean",
+      "b": "mem_probe.0.p90_over_median",
+      "partial": -0.262,
+      "marginal": 0.389
+    },
+    {
+      "a": "mem_probe.0.std",
+      "b": "mem_probe.0.floor_ratio",
+      "partial": -0.138,
+      "marginal": 0.372
+    },
+    {
+      "a": "mem_probe.0.median",
+      "b": "mem_probe.0.p90_over_median",
+      "partial": 0.268,
+      "marginal": 0.316
+    }
+  ],
+  "collider_suspects": [
+    {
+      "a": "compute_probe.0.std",
+      "b": "compute_probe.0.p90_over_median",
+      "partial": -0.729,
+      "marginal": 0.024
+    },
+    {
+      "a": "compute_probe.0.mean",
+      "b": "compute_probe.0.p90_over_median",
+      "partial": 0.642,
+      "marginal": 0.251
+    },
+    {
+      "a": "compute_probe.0.median",
+      "b": "compute_probe.0.p90_over_median",
+      "partial": -0.612,
+      "marginal": 0.033
+    },
+    {
+      "a": "compute_probe.0.p90_over_median",
+      "b": "compute_probe.0.floor_ratio",
+      "partial": -0.372,
+      "marginal": 0.002
+    },
+    {
+      "a": "mem_probe.0.std",
+      "b": "mem_probe.0.p90_over_median",
+      "partial": -0.372,
+      "marginal": 0.13
+    },
+    {
+      "a": "compute_probe.0.mean",
+      "b": "mem_probe.0.floor_ratio",
+      "partial": 0.304,
+      "marginal": 0.138
+    },
+    {
+      "a": "compute_probe.0.mean_over_median",
+      "b": "mem_probe.0.floor_ratio",
+      "partial": -0.304,
+      "marginal": 0.08
+    }
+  ],
+  "method": "linear-Gaussian partial-correlation skeleton (PC phase-1): direct = marginal AND partial correlated; mediated = marginal only; collider suspect = partial only. Associational and undirected \u2014 no interventions.",
+  "n_windows": 40
+}

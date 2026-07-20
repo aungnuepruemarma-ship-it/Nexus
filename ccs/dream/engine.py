@@ -86,7 +86,8 @@ def default_backlog() -> list[Dream]:
 
 class DreamEngine:
     def __init__(self, root: Path = ROOT, model=None, web=None, do_commit: bool = True,
-                 backlog: list[Dream] | None = None, sandbox: Sandbox | None = None):
+                 backlog: list[Dream] | None = None, sandbox: Sandbox | None = None,
+                 reviewer=None):
         self.root = Path(root)
         self.results = self.root / "results"
         self.registry_path = self.root / "registry" / "registry.json"
@@ -98,6 +99,7 @@ class DreamEngine:
         self.backlog = backlog if backlog is not None else default_backlog()
         self.sandbox = sandbox or Sandbox()
         self.actions = GuardedActions(self.root, self.sandbox)
+        self.reviewer = reviewer
 
     # -- selection ---------------------------------------------------------
     def pending(self) -> list[Dream]:
@@ -120,6 +122,16 @@ class DreamEngine:
 
         result, entry = dream.run()   # REAL measurement on this hardware
 
+        # multi-agent review gate: a blocking finding stops certification.
+        review = self.reviewer.review(entry, result) if self.reviewer else None
+        record = {**result, "review": review} if review else result
+        if review and not review["approved"]:
+            self.actions.write_text(f"results/{dream.result_file}",
+                                    json.dumps(record, indent=2, default=list))
+            self._append_log(dream, entry, record, hypothesis, context, rejected=review)
+            return {"dream": dream.id, "status": "rejected", "review": review,
+                    "hypothesis": hypothesis, "web_context": context.get("summary")}
+
         reg = Registry.load(self.registry_path) if self.registry_path.exists() else Registry(entries={})
         reg.add(entry)
         reg.propagate_expiry()
@@ -127,7 +139,7 @@ class DreamEngine:
         validation = validate_registry(reg)
 
         self.actions.write_text(f"results/{dream.result_file}",
-                                json.dumps(result, indent=2, default=list))
+                                json.dumps(record, indent=2, default=list))
         self._update_manifest(dream, result, reg, validation)
         self._append_log(dream, entry, result, hypothesis, context)
 
@@ -135,6 +147,7 @@ class DreamEngine:
             "dream": dream.id, "status": entry.get("status"),
             "accuracy": entry.get("accuracy"), "registry_valid": validation["ok"],
             "hypothesis": hypothesis, "web_context": context.get("summary"),
+            "review": review["verdict"] if review else None,
         }
         if self.do_commit:
             summary["committed"] = self._commit(dream, entry, hypothesis)
@@ -180,7 +193,8 @@ class DreamEngine:
                                  if reg.entries[cid].get("depends_on")}
         self.actions.write_text("results/manifest.json", json.dumps(man, indent=2, default=list))
 
-    def _append_log(self, dream: Dream, entry: dict, result: dict, hypothesis: str, context: dict) -> None:
+    def _append_log(self, dream: Dream, entry: dict, result: dict, hypothesis: str,
+                    context: dict, rejected: dict | None = None) -> None:
         if not self.log_path.exists():
             self.actions.write_text(
                 "results/DREAM_LOG.md",
@@ -189,16 +203,21 @@ class DreamEngine:
                 "a hypothesis (local model), optional web context, and the certified verdict.\n")
         ts = dt.datetime.now().isoformat(timespec="seconds")
         ctx = context.get("summary")
+        head = "REJECTED" if rejected else entry.get("status", "?").upper()
         lines = [
-            f"\n## {dream.id} — {entry.get('status', '?').upper()}  ({ts})",
+            f"\n## {dream.id} — {head}  ({ts})",
             f"- **Hypothesis (model):** {hypothesis}",
         ]
         if ctx:
             lines.append(f"- **Web context:** {ctx}")
-        acc = entry.get("accuracy")
-        lines.append(f"- **Verdict:** `{entry.get('status')}`"
-                     + (f", score {acc}" if acc is not None else "")
-                     + f" — {dream.title}. Schema-valid: {result.get('entry_valid')}.")
+        if rejected:
+            lines.append(f"- **Review:** `{rejected['verdict']}` — blocked by {rejected['blockers']}; "
+                         "not certified.")
+        else:
+            acc = entry.get("accuracy")
+            lines.append(f"- **Verdict:** `{entry.get('status')}`"
+                         + (f", score {acc}" if acc is not None else "")
+                         + f" — {dream.title}. Schema-valid: {result.get('entry_valid')}.")
         self.actions.append_text("results/DREAM_LOG.md", "\n".join(lines) + "\n")
 
     def _commit(self, dream: Dream, entry: dict, hypothesis: str) -> bool:

@@ -315,6 +315,61 @@
     "valid_until": "2026-11-17",
     "version": "1.0.0"
   },
+  "mem_bandwidth_16mib_v1": {
+    "accuracy": 0.934,
+    "confidence": 0.934,
+    "date_created": "2026-07-20",
+    "description": "Generated: sustained streaming memory bandwidth over a 16mib buffer.",
+    "energy_mj": 0.0,
+    "failure_modes": [
+      "Co-tenant load widens run-to-run spread past tolerance."
+    ],
+    "generalization": {
+      "gbps_run1": 43.787,
+      "gbps_run2": 46.88,
+      "note": "single-host; generated parameter point",
+      "spread": 0.066
+    },
+    "half_life_days": 90,
+    "id": "mem_bandwidth_16mib_v1",
+    "last_verified": "2026-07-20",
+    "latency_ms": 1.0,
+    "limitations": [
+      "Generated variant measured on one host; a lower bound via NumPy loops."
+    ],
+    "model": {
+      "features": "gbps",
+      "kind": "generated parameterized probe"
+    },
+    "name": "Streaming bandwidth @ 16mib",
+    "privacy_audit": {
+      "bystander_inference": "None \u2014 it measures only its own memory/compute; reveals a host property, not any neighbor's data.",
+      "disclosure_sensitive": false,
+      "escalation_gradient": "Sustained probing is also how a noisy neighbor is characterized; only self-measured here.",
+      "mitigations": "Bandwidth/QoS partitioning; disjoint-core scheduling.",
+      "permissionless": true,
+      "score": 0.7
+    },
+    "provenance": [],
+    "references": [
+      "ccs/dream/generator.py"
+    ],
+    "reproducibility": {
+      "independent_runs": 2,
+      "within_ci": true
+    },
+    "signals": [
+      {
+        "android_permission": "none",
+        "family": "memory",
+        "name": "bandwidth"
+      }
+    ],
+    "status": "positive",
+    "task": "recover sustained streaming bandwidth at a 16mib working set",
+    "valid_until": "2026-10-18",
+    "version": "1.0.0"
+  },
   "mem_bandwidth_v1": {
     "accuracy": 0.7251,
     "confidence": 0.7251,

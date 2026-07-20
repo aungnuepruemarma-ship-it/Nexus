@@ -9,5 +9,13 @@ from .web import WebBrowser
 from .sandbox import Sandbox
 from .actions import GuardedActions
 from .engine import DreamEngine, Dream
+from .generator import ExperimentGenerator
+from .memory_graph import MemoryGraph
+from .planner import ResearchPlanner
+from .reviewer import ReviewPanel
+from . import causal
 
-__all__ = ["LocalModel", "WebBrowser", "DreamEngine", "Dream", "Sandbox", "GuardedActions"]
+__all__ = [
+    "LocalModel", "WebBrowser", "DreamEngine", "Dream", "Sandbox", "GuardedActions",
+    "ExperimentGenerator", "MemoryGraph", "ResearchPlanner", "ReviewPanel", "causal",
+]

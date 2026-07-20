@@ -364,15 +364,25 @@
         "machine": "x86_64",
         "python": "3.11.15"
       }
+    },
+    "EXP-GEN-BANDWIDTH": {
+      "passed": true,
+      "status": "positive",
+      "gbps": 45.333,
+      "gbps_run1": 43.787,
+      "gbps_run2": 46.88,
+      "spread": 0.066,
+      "reproduced": true,
+      "entry_valid": true
     }
   },
   "registry_summary": {
-    "positive": 11,
+    "positive": 12,
     "negative": 3,
     "unstable": 1,
     "deprecated": 0,
     "experimental": 1,
-    "total": 16,
+    "total": 17,
     "has_cycle": false
   },
   "registry_valid": true,
