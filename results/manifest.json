@@ -266,15 +266,34 @@
         "machine": "x86_64",
         "python": "3.11.15"
       }
+    },
+    "EXP-HW-MEMBW": {
+      "passed": true,
+      "status": "positive",
+      "gbps": 37.509,
+      "gbps_run1": 31.531,
+      "gbps_run2": 43.487,
+      "spread": 0.2749,
+      "reproduced": true,
+      "thresholds": {
+        "min_gbps": 0.5,
+        "max_spread": 0.35
+      },
+      "entry_valid": true,
+      "entry_errors": [],
+      "host": {
+        "machine": "x86_64",
+        "python": "3.11.15"
+      }
     }
   },
   "registry_summary": {
-    "positive": 6,
+    "positive": 7,
     "negative": 3,
     "unstable": 1,
     "deprecated": 0,
     "experimental": 1,
-    "total": 11,
+    "total": 12,
     "has_cycle": false
   },
   "registry_valid": true,

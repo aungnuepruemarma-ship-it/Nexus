@@ -197,6 +197,63 @@
     "valid_until": "2027-01-19",
     "version": "1.0.0"
   },
+  "mem_bandwidth_v1": {
+    "accuracy": 0.7251,
+    "confidence": 0.7251,
+    "date_created": "2026-07-20",
+    "description": "Measures the sustained streaming memory bandwidth of this host by timing a read-modify-write over a 64 MiB buffer (past all caches). The designed use of a memory write is storage; the latent capability is empirical bandwidth characterization of the actual machine.",
+    "energy_mj": 2684.355,
+    "failure_modes": [
+      "Heavy neighbor bandwidth contention widens run-to-run spread past tolerance."
+    ],
+    "generalization": {
+      "gbps_run1": 31.531,
+      "gbps_run2": 43.487,
+      "note": "single-host measurement; this machine's memory subsystem",
+      "spread": 0.2749
+    },
+    "half_life_days": 120,
+    "id": "mem_bandwidth_v1",
+    "last_verified": "2026-07-20",
+    "latency_ms": 71.5664,
+    "limitations": [
+      "Measured on one host in a container with a shared memory bus; absolute GB/s reflects NumPy's vectorized loop, a lower bound on peak bandwidth.",
+      "Co-tenant bandwidth load will lower the observed number."
+    ],
+    "model": {
+      "features": "bytes moved / second",
+      "kind": "timed streaming read-modify-write"
+    },
+    "name": "Streaming Memory Bandwidth (recovered from timing)",
+    "privacy_audit": {
+      "bystander_inference": "None \u2014 it streams only its own buffer; it reveals the host's memory bandwidth, not any neighbor's data.",
+      "disclosure_sensitive": false,
+      "escalation_gradient": "Sustained bandwidth probing is also how a noisy neighbor is characterized (see exp_hw_workload_id); no cross-tenant attack is shown here.",
+      "mitigations": "Memory-bandwidth partitioning / QoS (e.g. Intel MBA); schedule bandwidth-heavy tenants apart.",
+      "permissionless": false,
+      "score": 1.0
+    },
+    "provenance": [],
+    "references": [
+      "STREAM benchmark (McCalpin)"
+    ],
+    "reproducibility": {
+      "independent_runs": 2,
+      "within_ci": true
+    },
+    "signals": [
+      {
+        "android_permission": "none",
+        "family": "memory",
+        "name": "bandwidth",
+        "sampling": "64 MiB read-modify-write stream"
+      }
+    ],
+    "status": "positive",
+    "task": "recover sustained streaming memory bandwidth (GB/s)",
+    "valid_until": "2026-11-17",
+    "version": "1.0.0"
+  },
   "memory_hierarchy_v1": {
     "accuracy": 0.7234,
     "confidence": 0.7234,
