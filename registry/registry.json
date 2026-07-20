@@ -503,6 +503,62 @@
     "valid_until": "2026-11-16",
     "version": "1.0.0"
   },
+  "timer_resolution_v1": {
+    "accuracy": 1.0,
+    "confidence": 1.0,
+    "date_created": "2026-07-20",
+    "description": "Recovers the effective granularity of perf_counter_ns by reading it back-to-back and taking the smallest nonzero delta \u2014 the real tick the OS/CPU expose, not the advertised one. The median delta is the read overhead.",
+    "energy_mj": 0.0,
+    "failure_modes": [
+      "A coarse-timer platform (low-resolution clock) would fail the sub-\u00b5s bar."
+    ],
+    "generalization": {
+      "note": "single-host measurement; this CPU/OS clock",
+      "read_overhead_ns": 109.0,
+      "resolution_ns_batch1": 101.0,
+      "resolution_ns_batch2": 101.0
+    },
+    "half_life_days": 180,
+    "id": "timer_resolution_v1",
+    "last_verified": "2026-07-20",
+    "latency_ms": 0.000101,
+    "limitations": [
+      "Measured on one host (Linux 6.18) in a container; the Python read overhead sets a floor on the observable resolution."
+    ],
+    "model": {
+      "features": "consecutive perf_counter_ns deltas",
+      "kind": "min-nonzero-delta over back-to-back clock reads"
+    },
+    "name": "Effective Clock Resolution (recovered from timing)",
+    "privacy_audit": {
+      "bystander_inference": "None \u2014 it times only its own clock reads.",
+      "disclosure_sensitive": false,
+      "escalation_gradient": "A fine clock is the enabler of most timing side channels; that is why coarse clocks are a standard mitigation.",
+      "mitigations": "Coarsen the clock exposed to untrusted code (reduce timestamp resolution).",
+      "permissionless": false,
+      "score": 1.0
+    },
+    "provenance": [],
+    "references": [
+      "clock_getres(2); perf_counter_ns"
+    ],
+    "reproducibility": {
+      "independent_runs": 2,
+      "within_ci": true
+    },
+    "signals": [
+      {
+        "android_permission": "none",
+        "family": "cpu",
+        "name": "clock",
+        "sampling": "back-to-back perf_counter_ns"
+      }
+    ],
+    "status": "positive",
+    "task": "recover the effective clock resolution + read overhead",
+    "valid_until": "2027-01-16",
+    "version": "1.0.0"
+  },
   "workload_type_classifier_v1": {
     "accuracy": 0.8627,
     "confidence": 0.8627,

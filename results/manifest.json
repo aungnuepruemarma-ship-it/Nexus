@@ -250,15 +250,31 @@
         "processor": "x86_64",
         "python": "3.11.15"
       }
+    },
+    "EXP-HW-TIMER-RES": {
+      "passed": true,
+      "status": "positive",
+      "resolution_ns": 101.0,
+      "read_overhead_ns": 109.0,
+      "resolution_ns_batch1": 101.0,
+      "resolution_ns_batch2": 101.0,
+      "reproduced": true,
+      "threshold_ns": 1000.0,
+      "entry_valid": true,
+      "entry_errors": [],
+      "host": {
+        "machine": "x86_64",
+        "python": "3.11.15"
+      }
     }
   },
   "registry_summary": {
-    "positive": 5,
+    "positive": 6,
     "negative": 3,
     "unstable": 1,
     "deprecated": 0,
     "experimental": 1,
-    "total": 10,
+    "total": 11,
     "has_cycle": false
   },
   "registry_valid": true,
