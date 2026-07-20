@@ -26,6 +26,20 @@ MAX_CYCLES="${DREAM_MAX_CYCLES:-0}"   # 0 = run forever
 
 log() { echo "[dream-daemon $(date -Is)] $*"; }
 
+# Best-effort "don't sleep": on a real desktop, re-exec under an inhibitor so the machine
+# (and, where supported, the display) stays awake while the daemon runs. No-ops on a headless
+# host — there is no desktop session to keep on. Set DREAM_NO_INHIBIT=1 to skip.
+if [ -z "${DREAM_INHIBITED:-}" ] && [ -z "${DREAM_NO_INHIBIT:-}" ]; then
+  export DREAM_INHIBITED=1
+  if command -v caffeinate >/dev/null 2>&1; then                 # macOS
+    log "keeping awake via caffeinate"; exec caffeinate -dimsu "$0" "$@"
+  elif command -v systemd-inhibit >/dev/null 2>&1; then          # Linux w/ systemd
+    log "keeping awake via systemd-inhibit"
+    exec systemd-inhibit --what=idle:sleep --why="Nexus discovery loop" "$0" "$@"
+  fi
+  command -v xset >/dev/null 2>&1 && xset s off -dpms >/dev/null 2>&1 && log "disabled X screen blanking"
+fi
+
 cycle=0
 while :; do
   cycle=$((cycle + 1))

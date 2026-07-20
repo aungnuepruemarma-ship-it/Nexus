@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "status": "positive",
+  "penalty": 24.455,
+  "penalty_run1": 22.707,
+  "penalty_run2": 26.203,
+  "seq_ms": 5.1287,
+  "rnd_ms": 124.9635,
+  "spread": 0.1334,
+  "reproduced": true,
+  "thresholds": {
+    "min_penalty": 1.1,
+    "max_spread": 0.35
+  },
+  "entry_valid": true,
+  "entry_errors": [],
+  "host": {
+    "machine": "x86_64",
+    "python": "3.11.15"
+  }
+}

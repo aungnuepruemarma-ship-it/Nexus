@@ -20,6 +20,15 @@ from ccs.validator import validate_registry
 
 ROOT = Path(__file__).resolve().parents[2]
 
+# The standing mission the local model pursues every cycle — the Automated Computer
+# Scientist's goal, in its own words. Framed into the model's system prompt and logged.
+MISSION = (
+    "Discover the hidden laws of THIS machine — measurable, reproducible facts about its "
+    "CPU, memory, cache, clock and OS that no spec sheet states — hypothesize each, let it be "
+    "measured on real hardware, certify only what survives falsification, and keep building "
+    "and committing new laws to the registry, forever."
+)
+
 
 @dataclass
 class Dream:
@@ -40,7 +49,12 @@ def default_backlog() -> list[Dream]:
     from experiments.exp_hw_cache_ladder import run as run_cache
     from experiments.exp_hw_syscall import run as run_syscall
     from experiments.exp_hw_flops import run as run_flops
+    from experiments.exp_hw_mempattern import run as run_mempattern
     return [
+        Dream("memory_access_penalty_v1", "Random vs sequential access penalty", "EXP-HW-MEMPATTERN",
+              "exp_hw_mempattern.json", run_mempattern,
+              "In one sentence: why is touching the same bytes in random order so much slower "
+              "than in sequential order on a real CPU?", topic="CPU cache"),
         Dream("flops_throughput_v1", "Sustained FP throughput", "EXP-HW-FLOPS",
               "exp_hw_flops.json", run_flops,
               "In one sentence: what does timing a streamed multiply-add over large arrays "
@@ -130,7 +144,8 @@ class DreamEngine:
         try:
             return self.model.chat(
                 dream.prompt,
-                system="You are a hardware-discovery scientist. Answer in one concise sentence.")
+                system=f"You are a hardware-discovery scientist. Your mission: {MISSION} "
+                       "Answer in one concise sentence.")
         except Exception as e:
             return f"[model error] {type(e).__name__}"
 

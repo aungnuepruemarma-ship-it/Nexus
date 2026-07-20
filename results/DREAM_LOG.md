@@ -19,3 +19,8 @@ Machine-written by `ccs.dream.DreamEngine`. Each entry is one self-experiment: a
 - **Hypothesis (model):** A CPU's real-time floating-point throughput reveals that it is able to execute multiple instructions concurrently, even on extremely large arrays, demonstrating its near-immediate and efficient processing capabilities.
 - **Web context:** Floating point operations per second is a measure of computer performance or compute in computing, useful in fields of scientific computations that require floating-point calculations.
 - **Verdict:** `positive`, score 0.9816 — Sustained FP throughput. Schema-valid: True.
+
+## memory_access_penalty_v1 — POSITIVE  (2026-07-20T06:04:33)
+- **Hypothesis (model):** Because the CPU's random access speed is extremely high, even for a small number of bytes, it can't afford to store the same bytes in a sequential order, which would be much slower.
+- **Web context:** A CPU cache is a hardware cache used by the central processing unit (CPU) of a computer to reduce the average cost to access data from the main memory. A cache is a smaller, faster memory, located closer to a processor core, which stores copies of the data from frequently used ma
+- **Verdict:** `positive`, score 0.8666 — Random vs sequential access penalty. Schema-valid: True.

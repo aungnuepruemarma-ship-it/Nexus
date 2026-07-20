@@ -311,6 +311,63 @@
     "valid_until": "2026-11-17",
     "version": "1.0.0"
   },
+  "memory_access_penalty_v1": {
+    "accuracy": 0.8666,
+    "confidence": 0.8666,
+    "date_created": "2026-07-20",
+    "description": "Measures how much slower random memory access is than sequential access over a 64 MiB buffer \u2014 the empirical benefit this machine's cache lines + hardware prefetcher give ordered access. The designed use of memory is storage; the latent capability is recovering the access-pattern penalty of the actual hardware.",
+    "energy_mj": 384.0,
+    "failure_modes": [
+      "A buffer that fits in cache would erase the penalty (ratio ~1)."
+    ],
+    "generalization": {
+      "note": "single-host measurement; this machine's cache-line + prefetch behaviour",
+      "penalty_run1": 22.707,
+      "penalty_run2": 26.203,
+      "spread": 0.1334
+    },
+    "half_life_days": 120,
+    "id": "memory_access_penalty_v1",
+    "last_verified": "2026-07-20",
+    "latency_ms": 124.9635,
+    "limitations": [
+      "Measured on one host in a container; NumPy fancy-indexing also allocates the gather output, so the ratio is a conservative lower bound on the raw penalty.",
+      "Co-tenant memory-bandwidth load shifts the ratio."
+    ],
+    "model": {
+      "features": "random_time / sequential_time",
+      "kind": "timed sequential sum vs random-gather sum"
+    },
+    "name": "Random-vs-Sequential Access Penalty (recovered from timing)",
+    "privacy_audit": {
+      "bystander_inference": "None \u2014 it walks only its own array; it reveals the host's cache-line/prefetch behaviour, not any neighbor's data.",
+      "disclosure_sensitive": false,
+      "escalation_gradient": "Access-pattern timing underlies cache/prefetch side channels; only self-measured here.",
+      "mitigations": "Constant-time / oblivious access patterns in secret-dependent code; cache partitioning.",
+      "permissionless": false,
+      "score": 1.0
+    },
+    "provenance": [],
+    "references": [
+      "cache-line / hardware-prefetcher microbenchmarking"
+    ],
+    "reproducibility": {
+      "independent_runs": 2,
+      "within_ci": true
+    },
+    "signals": [
+      {
+        "android_permission": "none",
+        "family": "memory",
+        "name": "access_pattern",
+        "sampling": "sequential vs random gather over 64 MiB"
+      }
+    ],
+    "status": "positive",
+    "task": "recover the random/sequential memory-access penalty ratio",
+    "valid_until": "2026-11-17",
+    "version": "1.0.0"
+  },
   "memory_hierarchy_v1": {
     "accuracy": 0.7234,
     "confidence": 0.7234,
