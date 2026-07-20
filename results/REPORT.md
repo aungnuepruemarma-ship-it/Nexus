@@ -149,6 +149,43 @@ code, not just the models.
 
 ---
 
+## The Automated Computer Scientist — an autonomous discovery loop
+
+The platform now drives *itself*. `ccs/dream/` adds a self-experimenting loop (the "Hardware
+Dreaming Engine" / Automated Computer Scientist) with three parts:
+
+- **A local open-source model** (`LocalModel`, SmolLM2-135M-Instruct, ~135M params, runs on
+  CPU in ~1–2 s) that proposes/narrates each hypothesis. It degrades gracefully to heuristic
+  text if the weights or runtime are absent, so the loop never depends on it.
+- **A web-browsing ability** (`WebBrowser`) that fetches outside context through the sandbox
+  proxy — verified live against `example.com`, raw GitHub, and the Wikipedia REST API (e.g. it
+  pulled the encyclopedic definition of a *system call* as context for the syscall experiment).
+- **The `DreamEngine` loop**: for each pending "law of this machine" it states a hypothesis
+  (model), fetches context (web), runs the **real** experiment on this hardware, certifies it
+  through the existing harness/validator, merges the honest verdict into the registry, appends
+  to a machine-written [`DREAM_LOG.md`](DREAM_LOG.md), and **commits the update to git** — no
+  human in the loop.
+
+Run in this session, the loop autonomously discovered and committed three new "Laws of This
+Machine" (each its own git commit):
+
+| capability | measured on this host | verdict |
+|---|---|---|
+| `timer_resolution_v1` | effective clock tick **~103 ns**, read overhead ~112 ns | positive |
+| `mem_bandwidth_v1` | sustained streaming bandwidth **~38 GB/s** (reproduced) | positive |
+| `syscall_latency_v1` | `sched_yield` round-trip **~sub-µs**, reproduces | positive |
+
+```bash
+python scripts/dream_loop.py            # autonomous: hypothesis → measure → certify → commit
+python scripts/dream_loop.py --no-model # heuristic hypotheses (skip the LLM)
+```
+
+This is idea #10 (Automated Computer Scientist) made literal: the scientific method as
+software, generating hypotheses, running experiments, rejecting weak ideas, and publishing
+validated capabilities into the registry on its own.
+
+---
+
 ## Registry state (all four quadrants populated)
 
 | id | status | note |
@@ -156,6 +193,9 @@ code, not just the models.
 | `cpu_jitter_entropy_v1` | positive | CPU clock as entropy source (real hw) |
 | `cpu_contention_sensor_v1` | positive | co-tenant counter from timing (real hw) |
 | `memory_hierarchy_v1` | positive | cache→DRAM latency cliff recovered from timing (real hw) |
+| `timer_resolution_v1` | positive | effective clock granularity (autonomous discovery) |
+| `mem_bandwidth_v1` | positive | sustained memory bandwidth (autonomous discovery) |
+| `syscall_latency_v1` | positive | user→kernel round-trip cost (autonomous discovery) |
 | `occupancy_sim_v1` | positive | simulated occupancy, validates the pipeline |
 | `occupancy_v1` | positive | hand-written example |
 | `cpu_contention_unpinned_v1` | **negative** | `environment-bound` — real-hw non-capability |
@@ -216,6 +256,7 @@ registry entry:
 ```bash
 pip install numpy pandas scikit-learn jsonschema pyarrow pytest
 python scripts/run_all.py        # runs all experiments, writes results/ and registry/registry.json
-python -m pytest -q              # 35 tests
+python -m pytest -q              # 42 tests
+python scripts/dream_loop.py     # autonomous discovery loop (local model + web + git commits)
 python benchmark/bench_pipeline.py
 ```

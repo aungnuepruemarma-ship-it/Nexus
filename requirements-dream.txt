@@ -1,0 +1,7 @@
+# Optional dependencies for the autonomous discovery loop (ccs/dream, scripts/dream_loop.py).
+# The core platform (ccs/, experiments/, scripts/run_all.py) needs only requirements.txt;
+# these add the local open-source model and the web-browsing ability.
+transformers>=4.40
+torch>=2.2            # CPU wheel is fine: --extra-index-url https://download.pytorch.org/whl/cpu
+huggingface_hub>=0.23
+requests>=2.31

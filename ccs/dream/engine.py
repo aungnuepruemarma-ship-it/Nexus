@@ -75,12 +75,14 @@ class DreamEngine:
     # -- selection ---------------------------------------------------------
     def pending(self) -> list[Dream]:
         reg = Registry.load(self.registry_path) if self.registry_path.exists() else Registry(entries={})
-        today = dt.date.today()
+        today = dt.date.today().isoformat()
         out = []
         for d in self.backlog:
             e = reg.entries.get(d.id)
-            live = e and e.get("valid_until") and e["valid_until"] >= today.isoformat()
-            if not live:
+            expired = bool(e and e.get("valid_until") and e["valid_until"] < today)
+            # pending iff never attempted, or a dated certification has lapsed (needs re-verify);
+            # a terminal entry (e.g. a negative with no valid_until) counts as concluded.
+            if e is None or expired:
                 out.append(d)
         return out
 
