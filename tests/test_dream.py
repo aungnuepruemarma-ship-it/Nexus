@@ -6,9 +6,13 @@ dream so no real registry/git state is touched. The new hardware experiments run
 sample sizes just to confirm they produce schema-valid entries."""
 import numpy as np
 
+import pytest
+
 from ccs.dream.model import LocalModel
 from ccs.dream.web import WebBrowser, _strip_html
 from ccs.dream.engine import DreamEngine, Dream
+from ccs.dream.sandbox import Sandbox
+from ccs.dream.actions import GuardedActions
 from ccs.validator import validate_entry
 
 
@@ -105,3 +109,66 @@ def test_mission_is_framed_into_backlog_and_prompts():
     assert "laws of this machine" in MISSION.lower()
     ids = {d.id for d in default_backlog()}
     assert {"memory_access_penalty_v1", "flops_throughput_v1"} <= ids
+
+
+# -- safety sandbox ----------------------------------------------------------
+
+def test_sandbox_allows_declared_and_denies_everything_else():
+    sb = Sandbox()
+    assert sb.allows("git", "git_push") and sb.allows("filesystem", "write_reports")
+    assert not sb.allows("git", "shell_exec")       # not in the git allowlist
+    assert not sb.allows("git", "force_push")        # explicitly denied
+    assert not sb.allows("filesystem", "delete_repo")
+
+
+def test_sandbox_write_scoping():
+    sb = Sandbox()
+    assert sb.can_write("results/x.json") and sb.can_write("registry/registry.json")
+    assert not sb.can_write("ccs/hack.py") and not sb.can_write("/etc/passwd")
+    with pytest.raises(PermissionError):
+        sb.check_write("ccs/hack.py")
+    with pytest.raises(PermissionError):
+        sb.check("git", "force_push")
+
+
+def test_guarded_actions_refuse_out_of_scope_write(tmp_path):
+    acts = GuardedActions(tmp_path)                  # uses the real permissions.yaml
+    p = acts.write_text("results/ok.json", "{}")     # allowed path
+    assert p.exists()
+    with pytest.raises(PermissionError):
+        acts.write_text("ccs/evil.py", "x")          # refused
+
+
+def test_empty_policy_denies_by_default(tmp_path):
+    empty = tmp_path / "empty.yaml"
+    empty.write_text("version: 1\n")                 # no allowed:, no writable_globs
+    sb = Sandbox(empty)
+    assert not sb.allows("git", "git_push")
+    assert not sb.can_write("results/x.json")        # deny-by-default
+
+
+# -- self-monitoring meta-law ------------------------------------------------
+
+def test_loop_health_parse():
+    from experiments.exp_meta_loop_health import parse_dream_log
+    text = (
+        "# header\n\n"
+        "## a_v1 — POSITIVE  (2026-07-20T05:00:00)\n- x\n"
+        "## b_v1 — POSITIVE  (2026-07-20T06:00:00)\n- y\n"
+        "## c_v1 — UNSTABLE  (2026-07-20T07:00:00)\n- z\n")
+    s = parse_dream_log(text)
+    assert s["total"] == 3
+    assert s["by_status"]["positive"] == 2 and s["by_status"]["unstable"] == 1
+    assert s["success_rate"] == round(2 / 3, 4)
+
+
+def test_loop_health_entry_valid():
+    from experiments.exp_meta_loop_health import run
+    result, entry = run(verbose=False)
+    assert validate_entry(entry) == []
+    assert entry["status"] in ("positive", "unstable")
+
+
+def test_loop_health_in_backlog():
+    from ccs.dream.engine import default_backlog
+    assert "experiment_loop_health_v1" in {d.id for d in default_backlog()}

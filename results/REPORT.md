@@ -176,6 +176,7 @@ Machine" (each its own git commit):
 | `syscall_latency_v1` | `sched_yield` round-trip **~sub-µs**, reproduces | positive |
 | `flops_throughput_v1` | sustained FP throughput **~0.7 GFLOP/s** (reproduced) | positive |
 | `memory_access_penalty_v1` | random access **~24× slower** than sequential (cache line + prefetch) | positive |
+| `experiment_loop_health_v1` | **the scientist measuring itself** — experiments, success rate, commit cadence | positive |
 
 The loop pursues an explicit **mission** (`ccs.dream.engine.MISSION`, mirrored in
 [`GOALS.md`](../GOALS.md)) that is framed into the model's system prompt every cycle:
@@ -186,7 +187,36 @@ building and committing new laws forever.*
 python scripts/dream_loop.py            # autonomous: hypothesis → measure → certify → commit
 python scripts/dream_loop.py --no-model # heuristic hypotheses (skip the LLM)
 bash   scripts/dream_daemon.sh          # keep-awake daemon: run every 5 min (280s cap), auto-push
+bash   scripts/dream_screen.sh          # same, inside a detached tmux/screen session
 ```
+
+### Hardening — from one-off loop to a persistent, safe research daemon
+
+- **Safety sandbox** (`ccs/dream/permissions.yaml` + `sandbox.py` + `actions.py`): the loop's
+  every side effect — file writes and git — is routed through a **deny-by-default** permission
+  gate. It may write only `results/*`, `registry/registry.json`, `experiments/*` and run
+  `git add/commit/push`; `shell_exec`, `force_push`, `delete_repo` and out-of-scope writes are
+  refused. The model never gets unrestricted shell or filesystem access.
+- **Daemon heartbeat + recovery** (`scripts/dream_daemon.sh`): each cycle writes a
+  `results/dream_heartbeat` JSON (cycle, timestamp, pid, failure streak); a hung run is killed
+  by `timeout 280`, a stale `.git/index.lock` is cleared, and a failure streak triggers extended
+  backoff instead of a crash.
+- **Self-monitoring law** (`experiment_loop_health_v1`): the scientist measures *itself* from
+  its own discovery log + git history — experiment count, certification success rate, cadence,
+  autonomous commits/day. First rung toward a research-strategy optimizer.
+- **Persistence**: `scripts/dream_screen.sh` (tmux/screen) and `deploy/` (systemd service,
+  timer, cron) host it across logout/reboot on a machine you control.
+
+### Honest limitation — this is an autonomous *benchmark runner*, not yet an AGI scientist
+
+Today the loop is: *hypothesize (from a human-authored backlog) → run a known experiment →
+falsify → commit.* It does **not** yet invent its own experiments, design instruments, build a
+causal model of the machine, or review its own theories. The next modules — an **Experiment
+Generator**, a **Scientific Memory Graph**, a **Causal Discovery Engine**, a **Research
+Planner**, and a **multi-agent reviewer** — are what would move it from "autonomous benchmark
+runner" toward a genuine computational scientist. They are research programs in their own right,
+not a single session's work; the sandbox, self-monitoring, and persistent daemon built here are
+the foundation they would sit on.
 
 **Keep-awake daemon.** `scripts/dream_daemon.sh` runs the loop on a **5-minute cycle**, caps
 each run at **280 s** (`timeout`), and pushes any new commits to GitHub — so the machine keeps
@@ -213,6 +243,7 @@ validated capabilities into the registry on its own.
 | `syscall_latency_v1` | positive | user→kernel round-trip cost (autonomous discovery) |
 | `flops_throughput_v1` | positive | sustained FP throughput (autonomous discovery) |
 | `memory_access_penalty_v1` | positive | random-vs-sequential access penalty (autonomous discovery) |
+| `experiment_loop_health_v1` | positive | self-monitoring: the discovery loop measuring itself (meta) |
 | `occupancy_sim_v1` | positive | simulated occupancy, validates the pipeline |
 | `occupancy_v1` | positive | hand-written example |
 | `cpu_contention_unpinned_v1` | **negative** | `environment-bound` — real-hw non-capability |
@@ -273,7 +304,7 @@ registry entry:
 ```bash
 pip install numpy pandas scikit-learn jsonschema pyarrow pytest
 python scripts/run_all.py        # runs all experiments, writes results/ and registry/registry.json
-python -m pytest -q              # 46 tests
+python -m pytest -q              # 53 tests
 python scripts/dream_loop.py     # autonomous discovery loop (local model + web + git commits)
 python benchmark/bench_pipeline.py
 ```
