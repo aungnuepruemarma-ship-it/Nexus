@@ -27,17 +27,22 @@ MAX_CYCLES="${DREAM_MAX_CYCLES:-0}"   # 0 = run forever
 log() { echo "[dream-daemon $(date -Is)] $*"; }
 
 # Best-effort "don't sleep": on a real desktop, re-exec under an inhibitor so the machine
-# (and, where supported, the display) stays awake while the daemon runs. No-ops on a headless
-# host — there is no desktop session to keep on. Set DREAM_NO_INHIBIT=1 to skip.
+# (and, where supported, the display) stays awake while the daemon runs. Each inhibitor is
+# PROBED first and only exec'd if it actually works — a failing inhibitor must never kill the
+# daemon. No-ops on a headless host (e.g. this container has systemd-inhibit but no D-Bus).
+# Set DREAM_NO_INHIBIT=1 to skip entirely.
 if [ -z "${DREAM_INHIBITED:-}" ] && [ -z "${DREAM_NO_INHIBIT:-}" ]; then
   export DREAM_INHIBITED=1
-  if command -v caffeinate >/dev/null 2>&1; then                 # macOS
+  if command -v caffeinate >/dev/null 2>&1; then                          # macOS
     log "keeping awake via caffeinate"; exec caffeinate -dimsu "$0" "$@"
-  elif command -v systemd-inhibit >/dev/null 2>&1; then          # Linux w/ systemd
+  elif command -v systemd-inhibit >/dev/null 2>&1 \
+       && systemd-inhibit --what=sleep --why=probe true >/dev/null 2>&1; then  # Linux + systemd bus
     log "keeping awake via systemd-inhibit"
     exec systemd-inhibit --what=idle:sleep --why="Nexus discovery loop" "$0" "$@"
+  else
+    command -v xset >/dev/null 2>&1 && xset s off -dpms >/dev/null 2>&1 && log "disabled X screen blanking"
+    log "no working sleep-inhibitor (headless?) — running the loop awake, not the display"
   fi
-  command -v xset >/dev/null 2>&1 && xset s off -dpms >/dev/null 2>&1 && log "disabled X screen blanking"
 fi
 
 cycle=0
