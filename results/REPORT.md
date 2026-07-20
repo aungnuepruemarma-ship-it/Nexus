@@ -207,16 +207,32 @@ bash   scripts/dream_screen.sh          # same, inside a detached tmux/screen se
 - **Persistence**: `scripts/dream_screen.sh` (tmux/screen) and `deploy/` (systemd service,
   timer, cron) host it across logout/reboot on a machine you control.
 
-### Honest limitation — this is an autonomous *benchmark runner*, not yet an AGI scientist
+### The research program — five modules that make it a scientist, not just a runner
 
-Today the loop is: *hypothesize (from a human-authored backlog) → run a known experiment →
-falsify → commit.* It does **not** yet invent its own experiments, design instruments, build a
-causal model of the machine, or review its own theories. The next modules — an **Experiment
-Generator**, a **Scientific Memory Graph**, a **Causal Discovery Engine**, a **Research
-Planner**, and a **multi-agent reviewer** — are what would move it from "autonomous benchmark
-runner" toward a genuine computational scientist. They are research programs in their own right,
-not a single session's work; the sandbox, self-monitoring, and persistent daemon built here are
-the foundation they would sit on.
+`ccs/dream/` now ships pragmatic v1s of the five modules that turn the loop from a backlog
+runner into a self-directed research program. `python scripts/research_program.py` runs the
+whole thing; artifacts land in `results/` (`memory_graph.{json,mmd}`, `causal_skeleton.json`,
+`research_plan.json`).
+
+| module | what it does | honest scope |
+|---|---|---|
+| **Experiment Generator** (`generator.py`) | parameterizes probe templates (bandwidth, pointer-chase latency) over a working-set grid and emits runnable experiments for points the registry lacks | generates *variants of known probes*, not new physics |
+| **Scientific Memory Graph** (`memory_graph.py`) | the registry as a graph — nodes are capabilities, edges are shared signal family / `depends_on` / shared references; queryable + mermaid | structural, built from the registry |
+| **Causal Discovery Engine** (`causal.py`) | recovers the associational skeleton of measured signals via **partial correlation**, separating direct links, mediated pairs, and **collider artifacts** | linear-Gaussian, undirected, associational — *no interventions* |
+| **Research Planner** (`planner.py`) | scores + orders candidates (never-attempted backlog, expiring re-verifications, generated gap-fillers) into an explainable plan | heuristic priority, not a learned policy |
+| **Multi-agent Reviewer** (`reviewer.py`) | a panel (Statistician, Skeptic, Methodologist, Safety Officer, + optional model peer) gates certification — a blocking finding stops a result entering the registry | rule-based reviewers, one optional LLM voice |
+
+Demonstrated end to end: the program built the memory graph (16 nodes), ran causal discovery on
+real two-probe features (recovering direct edges like `mem.mean–mem.median` while flagging
+collider artifacts), planned, and certified a **generated** law (`mem_bandwidth_16mib_v1`) only
+after the reviewer panel returned **accept**.
+
+**What is still honestly missing.** These are v1s. The generator does not yet invent genuinely
+novel instruments; the causal engine is associational, not interventional; the planner is
+heuristic, not a learned research policy; the reviewers are rules, not deliberating agents. The
+loop is now a *self-directing* research program with safety, memory, causality, planning and
+review — but the leap to a system that designs its own instruments and forms falsifiable causal
+theories from open-ended observation remains genuine future work, on top of this foundation.
 
 **Keep-awake daemon.** `scripts/dream_daemon.sh` runs the loop on a **5-minute cycle**, caps
 each run at **280 s** (`timeout`), and pushes any new commits to GitHub — so the machine keeps
@@ -304,7 +320,8 @@ registry entry:
 ```bash
 pip install numpy pandas scikit-learn jsonschema pyarrow pytest
 python scripts/run_all.py        # runs all experiments, writes results/ and registry/registry.json
-python -m pytest -q              # 53 tests
+python -m pytest -q              # 60 tests
+python scripts/research_program.py --iterations 1   # generator+graph+causal+planner+reviewer
 python scripts/dream_loop.py     # autonomous discovery loop (local model + web + git commits)
 python benchmark/bench_pipeline.py
 ```
