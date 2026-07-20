@@ -197,6 +197,67 @@
     "valid_until": "2027-01-19",
     "version": "1.0.0"
   },
+  "experiment_loop_health_v1": {
+    "accuracy": 1.0,
+    "confidence": 1.0,
+    "date_created": "2026-07-20",
+    "description": "A meta-capability: recovers the health of the Automated Computer Scientist from its own discovery log and git history \u2014 number of self-experiments, certification success rate, cadence and autonomous commits. The first step toward a self-improving research strategy that learns which experiments are productive.",
+    "energy_mj": 0.0,
+    "failure_modes": [
+      "An empty or truncated DREAM_LOG.md makes the loop look idle (unstable)."
+    ],
+    "generalization": {
+      "autonomous_commits": 5,
+      "by_status": {
+        "positive": 5
+      },
+      "commits_per_day": 231.016,
+      "discoveries": 5,
+      "experiments_per_hour": 9.626,
+      "note": "measures this project's own loop; not a hardware law"
+    },
+    "half_life_days": 30,
+    "id": "experiment_loop_health_v1",
+    "last_verified": "2026-07-20",
+    "latency_ms": 1.0,
+    "limitations": [
+      "Introspective over one project's history; not a claim about hardware.",
+      "Success rate here counts logged autonomous discoveries only."
+    ],
+    "model": {
+      "features": "discoveries, success_rate, experiments/hour, commits/day",
+      "kind": "introspective metrics over the loop's own record"
+    },
+    "name": "Discovery-Loop Health (the scientist measuring itself)",
+    "privacy_audit": {
+      "bystander_inference": "None \u2014 it reads only this project's own discovery log and git history.",
+      "disclosure_sensitive": false,
+      "escalation_gradient": "Self-monitoring is the substrate of a research-strategy optimizer; no external party is involved.",
+      "mitigations": "Not applicable \u2014 introspective metric over the loop's own record.",
+      "permissionless": true,
+      "score": 0.7
+    },
+    "provenance": [],
+    "references": [
+      "ccs/dream/engine.py (the loop this measures)"
+    ],
+    "reproducibility": {
+      "independent_runs": 1,
+      "within_ci": true
+    },
+    "signals": [
+      {
+        "android_permission": "none",
+        "family": "capability",
+        "name": "loop_health",
+        "sampling": "read DREAM_LOG.md + git history"
+      }
+    ],
+    "status": "positive",
+    "task": "recover discovery-loop health (experiments, success rate, cadence, commits)",
+    "valid_until": "2026-08-19",
+    "version": "1.0.0"
+  },
   "flops_throughput_v1": {
     "accuracy": 0.9816,
     "confidence": 0.9816,

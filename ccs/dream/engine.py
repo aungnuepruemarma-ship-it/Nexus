@@ -10,13 +10,14 @@ from __future__ import annotations
 
 import datetime as dt
 import json
-import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
 from ccs.registry import Registry
 from ccs.validator import validate_registry
+from .sandbox import Sandbox
+from .actions import GuardedActions
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -50,11 +51,16 @@ def default_backlog() -> list[Dream]:
     from experiments.exp_hw_syscall import run as run_syscall
     from experiments.exp_hw_flops import run as run_flops
     from experiments.exp_hw_mempattern import run as run_mempattern
+    from experiments.exp_meta_loop_health import run as run_health
     return [
         Dream("memory_access_penalty_v1", "Random vs sequential access penalty", "EXP-HW-MEMPATTERN",
               "exp_hw_mempattern.json", run_mempattern,
               "In one sentence: why is touching the same bytes in random order so much slower "
               "than in sequential order on a real CPU?", topic="CPU cache"),
+        Dream("experiment_loop_health_v1", "Discovery-loop health (self-monitoring)", "EXP-META-LOOPHEALTH",
+              "exp_meta_loop_health.json", run_health,
+              "In one sentence: what does an autonomous research loop learn by measuring its own "
+              "experiment count, success rate and commit cadence?", topic="Scientific method"),
         Dream("flops_throughput_v1", "Sustained FP throughput", "EXP-HW-FLOPS",
               "exp_hw_flops.json", run_flops,
               "In one sentence: what does timing a streamed multiply-add over large arrays "
@@ -80,7 +86,7 @@ def default_backlog() -> list[Dream]:
 
 class DreamEngine:
     def __init__(self, root: Path = ROOT, model=None, web=None, do_commit: bool = True,
-                 backlog: list[Dream] | None = None):
+                 backlog: list[Dream] | None = None, sandbox: Sandbox | None = None):
         self.root = Path(root)
         self.results = self.root / "results"
         self.registry_path = self.root / "registry" / "registry.json"
@@ -90,6 +96,8 @@ class DreamEngine:
         self.web = web
         self.do_commit = do_commit
         self.backlog = backlog if backlog is not None else default_backlog()
+        self.sandbox = sandbox or Sandbox()
+        self.actions = GuardedActions(self.root, self.sandbox)
 
     # -- selection ---------------------------------------------------------
     def pending(self) -> list[Dream]:
@@ -118,7 +126,8 @@ class DreamEngine:
         reg.save(self.registry_path)
         validation = validate_registry(reg)
 
-        (self.results / dream.result_file).write_text(json.dumps(result, indent=2, default=list))
+        self.actions.write_text(f"results/{dream.result_file}",
+                                json.dumps(result, indent=2, default=list))
         self._update_manifest(dream, result, reg, validation)
         self._append_log(dream, entry, result, hypothesis, context)
 
@@ -169,11 +178,12 @@ class DreamEngine:
         man["registry_errors"] = validation
         man["decay_cut_sets"] = {cid: reg.decay_cut_set(cid) for cid in reg.entries
                                  if reg.entries[cid].get("depends_on")}
-        self.manifest_path.write_text(json.dumps(man, indent=2, default=list))
+        self.actions.write_text("results/manifest.json", json.dumps(man, indent=2, default=list))
 
     def _append_log(self, dream: Dream, entry: dict, result: dict, hypothesis: str, context: dict) -> None:
         if not self.log_path.exists():
-            self.log_path.write_text(
+            self.actions.write_text(
+                "results/DREAM_LOG.md",
                 "# Nexus Dream Log — autonomous hardware discoveries\n\n"
                 "Machine-written by `ccs.dream.DreamEngine`. Each entry is one self-experiment: "
                 "a hypothesis (local model), optional web context, and the certified verdict.\n")
@@ -189,8 +199,7 @@ class DreamEngine:
         lines.append(f"- **Verdict:** `{entry.get('status')}`"
                      + (f", score {acc}" if acc is not None else "")
                      + f" — {dream.title}. Schema-valid: {result.get('entry_valid')}.")
-        with self.log_path.open("a") as f:
-            f.write("\n".join(lines) + "\n")
+        self.actions.append_text("results/DREAM_LOG.md", "\n".join(lines) + "\n")
 
     def _commit(self, dream: Dream, entry: dict, hypothesis: str) -> bool:
         msg = (
@@ -201,10 +210,10 @@ class DreamEngine:
             "Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>\n"
             "Claude-Session: https://claude.ai/code/session_018KzWidWCVabrrJEUwcEh5P\n")
         try:
-            subprocess.run(["git", "-C", str(self.root), "add", "-A"], check=True,
-                           capture_output=True, text=True)
-            r = subprocess.run(["git", "-C", str(self.root), "commit", "-m", msg],
-                               capture_output=True, text=True)
-            return r.returncode == 0
+            self.actions.git_add_all()     # gated by Sandbox: git_add
+            return self.actions.git_commit(msg)   # gated by Sandbox: git_commit
+        except PermissionError:
+            # policy forbids git here — the discovery is still written to disk, just not committed
+            return False
         except Exception:
             return False

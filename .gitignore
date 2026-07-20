@@ -5,3 +5,4 @@ __pycache__/
 .ipynb_checkpoints/
 archive/
 results/dream_daemon.log
+results/dream_heartbeat

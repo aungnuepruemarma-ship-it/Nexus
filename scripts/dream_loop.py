@@ -38,6 +38,7 @@ def main() -> int:
     print(f"[dream] web: {'online' if (web.enabled and web.online()) else 'offline/disabled'}", flush=True)
 
     engine = DreamEngine(model=model, web=web, do_commit=not args.no_commit)
+    print(f"[dream] sandbox: {engine.sandbox.summary()}", flush=True)
     pending = engine.pending()
     print(f"[dream] pending capabilities: {[d.id for d in pending] or 'none (registry current)'}",
           flush=True)

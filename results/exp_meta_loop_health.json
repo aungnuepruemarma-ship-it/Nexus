@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "status": "positive",
+  "discoveries": 5,
+  "by_status": {
+    "positive": 5
+  },
+  "success_rate": 1.0,
+  "experiments_per_hour": 9.626,
+  "autonomous_commits": 5,
+  "commits_per_day": 231.016,
+  "span_hours": 0.519,
+  "thresholds": {
+    "min_discoveries": 3,
+    "min_success_rate": 0.5
+  },
+  "entry_valid": true,
+  "entry_errors": [],
+  "host": {
+    "machine": "x86_64",
+    "python": "3.11.15"
+  }
+}

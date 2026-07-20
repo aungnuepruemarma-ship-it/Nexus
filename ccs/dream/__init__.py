@@ -6,6 +6,8 @@ registry update -> git commit — turning the scientific method itself into soft
 """
 from .model import LocalModel
 from .web import WebBrowser
+from .sandbox import Sandbox
+from .actions import GuardedActions
 from .engine import DreamEngine, Dream
 
-__all__ = ["LocalModel", "WebBrowser", "DreamEngine", "Dream"]
+__all__ = ["LocalModel", "WebBrowser", "DreamEngine", "Dream", "Sandbox", "GuardedActions"]

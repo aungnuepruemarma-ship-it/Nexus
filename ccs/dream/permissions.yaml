@@ -1,0 +1,34 @@
+# Capability allowlist for the autonomous DreamEngine.
+#
+# Deny-by-default: any action the loop tries to take must be named under `allowed` (and must
+# not appear under `denied`), or ccs.dream.sandbox.Sandbox refuses it. This keeps the local
+# model / loop from doing anything beyond the research workflow — it can propose experiments,
+# update the registry, write reports and commit, and nothing else. No arbitrary shell, no
+# deletes, no writes outside the whitelisted paths.
+version: 1
+
+allowed:
+  filesystem:
+    - read_repo          # read any file in the checkout
+    - create_experiment  # add experiments/exp_*.py
+    - update_registry    # write registry/registry.json
+    - write_reports      # write results/*.json, results/*.md
+  git:
+    - git_add
+    - git_commit
+    - git_push
+
+# Explicitly forbidden regardless of the lists above (belt-and-suspenders).
+denied:
+  - shell_exec           # no arbitrary shell from the model
+  - delete_repo
+  - force_push
+  - network_write        # no outbound writes/POSTs (web ability is read-only fetch)
+
+limits:
+  max_commits_per_cycle: 5
+  # The only paths the loop may write. Anything else is refused by Sandbox.check_write.
+  writable_globs:
+    - "results/*"
+    - "registry/registry.json"
+    - "experiments/*"

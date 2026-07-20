@@ -45,18 +45,32 @@ if [ -z "${DREAM_INHIBITED:-}" ] && [ -z "${DREAM_NO_INHIBIT:-}" ]; then
   fi
 fi
 
+HEARTBEAT="$REPO/results/dream_heartbeat"
+FAIL_STREAK_MAX="${DREAM_FAIL_STREAK_MAX:-3}"   # after N straight failures, extra recovery backoff
+fails=0
 cycle=0
 while :; do
   cycle=$((cycle + 1))
+  # heartbeat: a monitor (or experiment_loop_health) can see the daemon is alive + when.
+  printf '{"cycle":%d,"ts":"%s","pid":%d,"consecutive_failures":%d}\n' \
+    "$cycle" "$(date -Is)" "$$" "$fails" > "$HEARTBEAT"
   log "cycle ${cycle}: running loop (timeout ${RUN_TIMEOUT}s)"
   before=$(git rev-parse HEAD 2>/dev/null)
 
   if timeout "${RUN_TIMEOUT}" python scripts/dream_loop.py; then
     log "cycle ${cycle}: loop finished"
+    fails=0
   else
     rc=$?
     [ "$rc" -eq 124 ] && log "cycle ${cycle}: TIMEOUT after ${RUN_TIMEOUT}s (non-fatal)" \
                       || log "cycle ${cycle}: loop exited rc=${rc} (non-fatal)"
+    fails=$((fails + 1))
+    # recovery: a hung/killed run can leave a stale git lock — clear it so the next cycle isn't wedged.
+    [ -f .git/index.lock ] && rm -f .git/index.lock && log "recovery: removed stale .git/index.lock"
+    if [ "${fails}" -ge "${FAIL_STREAK_MAX}" ]; then
+      log "recovery: ${fails} consecutive failures — extended backoff, then retrying"
+      sleep $((INTERVAL * 2))
+    fi
   fi
 
   after=$(git rev-parse HEAD 2>/dev/null)
